@@ -28,7 +28,16 @@ const trainingController = new TrainingController({
   waveform: new WaveformRenderer(),
 });
 
+const MAX_TRAINING_RECORDING_MS = 60_000;
+let recordingTimeoutId = null;
 let currentQuestion = null;
+
+function clearRecordingTimeout() {
+  if (recordingTimeoutId !== null) {
+    globalThis.clearTimeout(recordingTimeoutId);
+    recordingTimeoutId = null;
+  }
+}
 
 function showQuestion(question) {
   currentQuestion = question;
@@ -44,7 +53,32 @@ async function showTraining() {
   view.renderTraining(await trainingController.state());
 }
 
+async function finishTrainingRecording({ automatic = false } = {}) {
+  if (!trainingController.recording) return;
+
+  clearRecordingTimeout();
+  await trainingController.stopRecording();
+  trainingController.nextPhrase();
+  await showTraining();
+
+  if (automatic) {
+    view.renderError("Grabación guardada automáticamente al alcanzar el límite de 60 segundos.");
+  }
+}
+
+function scheduleRecordingLimit() {
+  clearRecordingTimeout();
+  recordingTimeoutId = globalThis.setTimeout(() => {
+    finishTrainingRecording({ automatic: true }).catch((error) => {
+      trainingController.cancelRecording();
+      console.error("Automatic voice training stop failed", error);
+      view.renderError(`${error.name || "Error"}: ${error.message}`);
+    });
+  }, MAX_TRAINING_RECORDING_MS);
+}
+
 function goHome() {
+  clearRecordingTimeout();
   consultationController.reset();
   if (trainingController.recording) trainingController.cancelRecording();
   currentQuestion = null;
@@ -103,16 +137,16 @@ view.bind({
   async onToggleRecording(canvas) {
     try {
       if (trainingController.recording) {
-        await trainingController.stopRecording();
-        trainingController.nextPhrase();
-        await showTraining();
+        await finishTrainingRecording();
       } else {
         await trainingController.startRecording({ canvas });
+        scheduleRecordingLimit();
         const state = await trainingController.state();
         state.recording = true;
         view.renderTraining(state);
       }
     } catch (error) {
+      clearRecordingTimeout();
       trainingController.cancelRecording();
       console.error("Voice training recording failed", error);
       view.renderError(`${error.name || "Error"}: ${error.message}`);
@@ -120,6 +154,7 @@ view.bind({
   },
 
   async onCancelRecording() {
+    clearRecordingTimeout();
     trainingController.cancelRecording();
     await showTraining();
   },
