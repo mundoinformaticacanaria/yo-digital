@@ -1,0 +1,50 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #09090b;
+  color: #f4f4f5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top, #18181b 0, #09090b 48%); }
+button, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0 72px; }
+.panel { border: 1px solid rgba(255,255,255,.08); background: rgba(18,18,20,.82); backdrop-filter: blur(18px); border-radius: 24px; padding: clamp(24px, 4vw, 48px); box-shadow: 0 28px 80px rgba(0,0,0,.35); }
+.hero { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; }
+.eyebrow { margin: 0 0 12px; color: #6ee7b7; letter-spacing: .18em; font-size: 12px; font-weight: 800; }
+h1 { font-size: clamp(38px, 7vw, 74px); line-height: .98; margin: 0; max-width: 900px; letter-spacing: -.04em; }
+h2 { font-size: clamp(24px, 4vw, 38px); line-height: 1.16; margin: 24px 0; letter-spacing: -.025em; }
+h3 { margin: 28px 0 10px; }
+.lead { color: #a1a1aa; max-width: 720px; font-size: clamp(17px, 2.4vw, 22px); line-height: 1.55; }
+.mode-grid, .architecture-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; margin-top: 28px; }
+.mode-card, .architecture-grid article { text-align: left; border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.035); border-radius: 18px; padding: 22px; color: inherit; }
+.mode-card:hover { border-color: rgba(110,231,183,.45); transform: translateY(-1px); }
+.mode-card strong { display: block; font-size: 18px; margin-bottom: 8px; }
+.mode-card span, .architecture-grid p, .privacy-note, .progress-row { color: #a1a1aa; line-height: 1.5; }
+.privacy-note { margin-top: 24px; font-size: 13px; }
+.progress-row, .actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.progress { height: 5px; margin-top: 10px; border-radius: 999px; background: rgba(255,255,255,.07); overflow: hidden; }
+.progress span { display: block; height: 100%; background: #6ee7b7; }
+textarea { width: 100%; resize: vertical; min-height: 150px; padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,.1); background: #0f0f11; color: #fff; outline: none; }
+textarea:focus { border-color: rgba(110,231,183,.5); box-shadow: 0 0 0 3px rgba(110,231,183,.08); }
+.actions { justify-content: flex-start; margin-top: 16px; flex-wrap: wrap; }
+.primary, .secondary, .ghost { border-radius: 12px; padding: 11px 16px; border: 1px solid transparent; }
+.primary { background: #f4f4f5; color: #09090b; font-weight: 750; }
+.secondary { background: rgba(255,255,255,.06); color: #fff; border-color: rgba(255,255,255,.1); }
+.ghost { background: transparent; color: #a1a1aa; }
+.architecture-grid article h3 { margin: 0 0 8px; text-transform: capitalize; color: #6ee7b7; }
+.roadmap, .next-steps { padding-left: 22px; color: #d4d4d8; }
+.roadmap li { margin: 12px 0; }
+.roadmap strong { display: block; text-transform: capitalize; }
+.roadmap span { color: #a1a1aa; }
+.toast { position: fixed; right: 18px; bottom: 18px; max-width: min(420px, calc(100% - 36px)); border-radius: 12px; padding: 13px 16px; background: #18181b; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 50px rgba(0,0,0,.4); }
+.toast.error { border-color: rgba(248,113,113,.35); }
+
+@media (max-width: 720px) {
+  .shell { width: min(100% - 20px, 1120px); padding-top: 20px; }
+  .panel { border-radius: 18px; padding: 20px; }
+  .mode-grid, .architecture-grid { grid-template-columns: 1fr; }
+  .hero { min-height: calc(100vh - 40px); }
+}
