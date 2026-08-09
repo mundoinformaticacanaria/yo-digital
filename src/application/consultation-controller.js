@@ -16,6 +16,7 @@ export class ConsultationController {
 
   answer(value) {
     if (!this.session) throw new Error("Consultation has not started");
+    this.stopListening();
     return this.session.answer(value);
   }
 
@@ -23,6 +24,10 @@ export class ConsultationController {
     if (!this.synthesizer?.isSupported?.()) return false;
     this.synthesizer.speak(text, handlers);
     return true;
+  }
+
+  get isListening() {
+    return Boolean(this.recognizer?.isListening);
   }
 
   listen(handlers = {}) {
@@ -33,8 +38,12 @@ export class ConsultationController {
     return true;
   }
 
+  stopListening({ notifyEnd = false } = {}) {
+    return this.recognizer?.stop?.({ notifyEnd }) ?? "";
+  }
+
   stopVoice() {
-    this.recognizer?.stop?.();
+    this.stopListening();
     this.synthesizer?.stop?.();
   }
 
