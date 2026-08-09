@@ -2,6 +2,10 @@ export class BrowserAudioRecorder {
   constructor({ navigatorRef = globalThis.navigator, MediaRecorderRef = globalThis.MediaRecorder } = {}) {
     this.navigatorRef = navigatorRef;
     this.MediaRecorderRef = MediaRecorderRef;
+    this.mediaDevices = navigatorRef?.mediaDevices ?? null;
+    this.getUserMedia = this.mediaDevices?.getUserMedia
+      ? this.mediaDevices.getUserMedia.bind(this.mediaDevices)
+      : null;
     this.stream = null;
     this.recorder = null;
     this.chunks = [];
@@ -9,7 +13,7 @@ export class BrowserAudioRecorder {
   }
 
   isSupported() {
-    return Boolean(this.navigatorRef?.mediaDevices?.getUserMedia && this.MediaRecorderRef);
+    return Boolean(this.getUserMedia && this.MediaRecorderRef);
   }
 
   async start() {
@@ -20,7 +24,7 @@ export class BrowserAudioRecorder {
       throw new Error("Audio recording is already in progress");
     }
 
-    this.stream = await this.navigatorRef.mediaDevices.getUserMedia({
+    this.stream = await this.getUserMedia({
       audio: {
         echoCancellation: true,
         noiseSuppression: true,
