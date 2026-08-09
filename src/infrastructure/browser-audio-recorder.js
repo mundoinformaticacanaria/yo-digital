@@ -1,11 +1,7 @@
 export class BrowserAudioRecorder {
-  constructor({ navigatorRef = globalThis.navigator, MediaRecorderRef = globalThis.MediaRecorder } = {}) {
+  constructor({ navigatorRef = globalThis.navigator, windowRef = globalThis.window } = {}) {
     this.navigatorRef = navigatorRef;
-    this.MediaRecorderRef = MediaRecorderRef;
-    this.mediaDevices = navigatorRef?.mediaDevices ?? null;
-    this.getUserMedia = this.mediaDevices?.getUserMedia
-      ? this.mediaDevices.getUserMedia.bind(this.mediaDevices)
-      : null;
+    this.windowRef = windowRef;
     this.stream = null;
     this.recorder = null;
     this.chunks = [];
@@ -13,7 +9,10 @@ export class BrowserAudioRecorder {
   }
 
   isSupported() {
-    return Boolean(this.getUserMedia && this.MediaRecorderRef);
+    return Boolean(
+      this.navigatorRef?.mediaDevices?.getUserMedia &&
+      (this.windowRef?.MediaRecorder || globalThis.MediaRecorder),
+    );
   }
 
   async start() {
@@ -24,20 +23,36 @@ export class BrowserAudioRecorder {
       throw new Error("Audio recording is already in progress");
     }
 
-    this.stream = await this.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-      },
-    });
+    let stream;
+    try {
+      const mediaDevices = this.navigatorRef.mediaDevices;
+      stream = await mediaDevices.getUserMedia.call(mediaDevices, {
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+    } catch (error) {
+      throw new Error(`getUserMedia: ${error?.name || "Error"}: ${error?.message || error}`);
+    }
+
+    this.stream = stream;
     this.chunks = [];
     this.startedAt = Date.now();
-    this.recorder = new this.MediaRecorderRef(this.stream);
-    this.recorder.ondataavailable = (event) => {
-      if (event.data?.size) this.chunks.push(event.data);
-    };
-    this.recorder.start();
+
+    try {
+      const MediaRecorderCtor = this.windowRef?.MediaRecorder || globalThis.MediaRecorder;
+      this.recorder = Reflect.construct(MediaRecorderCtor, [stream]);
+      this.recorder.ondataavailable = (event) => {
+        if (event.data?.size) this.chunks.push(event.data);
+      };
+      this.recorder.start();
+    } catch (error) {
+      this.release();
+      throw new Error(`MediaRecorder: ${error?.name || "Error"}: ${error?.message || error}`);
+    }
+
     return this.stream;
   }
 
@@ -73,7 +88,15 @@ export class BrowserAudioRecorder {
   }
 
   release() {
-    this.stream?.getTracks?.().forEach((track) => track.stop());
+    if (this.stream) {
+      for (const track of this.stream.getTracks()) {
+        try {
+          track.stop();
+        } catch {
+          // Best-effort cleanup.
+        }
+      }
+    }
     this.stream = null;
     this.recorder = null;
     this.chunks = [];
