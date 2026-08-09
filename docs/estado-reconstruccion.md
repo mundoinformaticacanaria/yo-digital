@@ -19,8 +19,20 @@
 - Controlador de entrenamiento reconstruido.
 - UI legible de consulta y entrenamiento reconstruida bajo `src/ui/`.
 - Preview aislada publicada en `preview/index.html` sin sustituir producción.
-- Tests de dominio, sesión, controladores, voz y dataset añadidos con `node:test`.
+- Tests de dominio, sesión, controladores, voz, dataset y waveform añadidos con `node:test`.
 - CI básica mediante GitHub Actions.
+
+## Incidencias de validación
+
+### 2026-08-09 · `Illegal invocation` al iniciar grabación
+
+Detectado en navegador real al pulsar el micrófono del entrenamiento de voz.
+
+Causa: `requestAnimationFrame` y `cancelAnimationFrame` se almacenaban como referencias directas en `WaveformRenderer`. Algunos navegadores exigen que estas APIs se invoquen con su contexto global original, provocando `Illegal invocation` cuando se llamaban como métodos de otra instancia.
+
+Corrección: los defaults son ahora wrappers que invocan explícitamente `globalThis.requestAnimationFrame(...)` y `globalThis.cancelAnimationFrame(...)`. Se añadió test de regresión para el adaptador de waveform.
+
+Estado: corregido en `main`; pendiente revalidación humana en GitHub Pages.
 
 ## Producción
 
@@ -32,14 +44,15 @@ Preview técnica de la reconstrucción:
 
 ## Trabajo restante antes de sustituir producción
 
-1. Validar la preview en navegador real: desktop/móvil, micrófono, SpeechRecognition, speechSynthesis, MediaRecorder e IndexedDB.
-2. Corregir cualquier incompatibilidad detectada en esa validación.
-3. Recuperar/preservar detalles visuales y de contenido que aporten valor frente a la nueva UI simplificada.
-4. Añadir comprobación automatizada de imports/estructura y endurecer CI.
-5. Documentar arquitectura TO-BE y operación de despliegue.
-6. Decidir el mecanismo final de generación del `index.html` desplegable.
-7. Sustituir el bundle heredado solo tras validación funcional suficiente.
+1. Revalidar la preview en navegador real tras la corrección de waveform.
+2. Validar desktop/móvil, micrófono, SpeechRecognition, speechSynthesis, MediaRecorder e IndexedDB.
+3. Corregir cualquier incompatibilidad detectada en esa validación.
+4. Recuperar/preservar detalles visuales y de contenido que aporten valor frente a la nueva UI simplificada.
+5. Añadir comprobación automatizada de imports/estructura y endurecer CI.
+6. Documentar arquitectura TO-BE y operación de despliegue.
+7. Decidir el mecanismo final de generación del `index.html` desplegable.
+8. Sustituir el bundle heredado solo tras validación funcional suficiente.
 
 ## Decisiones pendientes del cliente
 
-Ninguna decisión de producto pendiente. La siguiente parada válida será la validación humana de la preview antes de promoverla a producción.
+Ninguna decisión de producto pendiente. La siguiente parada válida será la revalidación humana de la preview antes de promoverla a producción.
