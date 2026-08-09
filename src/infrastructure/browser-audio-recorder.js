@@ -20,7 +20,13 @@ export class BrowserAudioRecorder {
       throw new Error("Audio recording is already in progress");
     }
 
-    this.stream = await this.navigatorRef.mediaDevices.getUserMedia({ audio: true });
+    this.stream = await this.navigatorRef.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+    });
     this.chunks = [];
     this.startedAt = Date.now();
     this.recorder = new this.MediaRecorderRef(this.stream);
@@ -28,6 +34,7 @@ export class BrowserAudioRecorder {
       if (event.data?.size) this.chunks.push(event.data);
     };
     this.recorder.start();
+    return this.stream;
   }
 
   async stop() {
