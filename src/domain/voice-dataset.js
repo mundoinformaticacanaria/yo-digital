@@ -1,5 +1,11 @@
+function sampleDurationMs(sample = {}) {
+  if (Number.isFinite(Number(sample.durationMs))) return Number(sample.durationMs);
+  if (Number.isFinite(Number(sample.duration))) return Number(sample.duration) * 1000;
+  return 0;
+}
+
 export function summarizeVoiceDataset(samples = []) {
-  const totalDurationMs = samples.reduce((total, sample) => total + Number(sample.durationMs ?? sample.duration * 1000 ?? 0), 0);
+  const totalDurationMs = samples.reduce((total, sample) => total + sampleDurationMs(sample), 0);
   const totalSeconds = totalDurationMs / 1000;
   const totalMinutes = totalSeconds / 60;
   const averageSeconds = samples.length ? totalSeconds / samples.length : 0;
