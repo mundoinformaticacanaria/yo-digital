@@ -5,35 +5,41 @@
 ## Completado
 
 - GitHub establecido como fuente de verdad.
-- README de proyecto.
-- Contexto operativo persistente.
-- Arquitectura AS-IS.
-- Requisitos funcionales base.
-- Reglas de negocio heredadas.
-- Roadmap técnico.
-- ADR-001 sobre reconstrucción y fuente de verdad.
-- Banco de preguntas extraído a `src/domain/questions.js`.
-- Detección de señales extraída a `src/domain/signals.js`.
-- Motor de recomendación reconstruido en `src/domain/recommendation-engine.js`.
-- Caso de uso de sesión reconstruido en `src/application/consultation-session.js`.
-- Repositorio IndexedDB reconstruido en `src/infrastructure/voice-sample-repository.js`.
-- Tests de dominio y sesión añadidos con `node:test`.
-- CI básica añadida con GitHub Actions.
+- README, contexto operativo, arquitectura AS-IS, requisitos, reglas de negocio, roadmap y ADR inicial.
+- Banco de preguntas y variantes recuperado.
+- Detección de señales y motor de recomendación reconstruidos como dominio puro.
+- Caso de uso de consulta reconstruido y desacoplado de la UI.
+- Adaptadores Web Speech API separados para reconocimiento y síntesis en `es-ES`.
+- Grabación MediaRecorder separada, con restricciones de audio equivalentes al legado.
+- Persistencia local de muestras separada en repositorio IndexedDB.
+- Banco exacto de 22 frases fonéticas recuperado del bundle heredado.
+- Métricas del dataset recuperadas: duración, promedio, progreso y calidad.
+- Exportación ZIP recuperada con JSZip opcional y fallback a audios individuales.
+- Renderizado de waveform aislado mediante Web Audio API.
+- Controlador de entrenamiento reconstruido.
+- UI legible de consulta y entrenamiento reconstruida bajo `src/ui/`.
+- Preview aislada publicada en `preview/index.html` sin sustituir producción.
+- Tests de dominio, sesión, controladores, voz y dataset añadidos con `node:test`.
+- CI básica mediante GitHub Actions.
 
 ## Producción
 
-La web publicada sigue usando el `index.html` heredado. No se ha cambiado el comportamiento de producción durante esta fase.
+La URL principal sigue sirviendo el `index.html` heredado. La reconstrucción no ha reemplazado todavía producción.
 
-## Siguiente trabajo
+Preview técnica de la reconstrucción:
 
-1. Completar adaptadores de voz de navegador.
-2. Reconstruir grabación/waveform/exportación.
-3. Reconstruir UI en fuente legible.
-4. Añadir tests de integración y compatibilidad.
-5. Definir build reproducible.
-6. Comparar nueva build contra comportamiento heredado.
-7. Sustituir el bundle heredado únicamente cuando exista equivalencia suficiente.
+`https://mundoinformaticacanaria.github.io/yo-digital/preview/`
+
+## Trabajo restante antes de sustituir producción
+
+1. Validar la preview en navegador real: desktop/móvil, micrófono, SpeechRecognition, speechSynthesis, MediaRecorder e IndexedDB.
+2. Corregir cualquier incompatibilidad detectada en esa validación.
+3. Recuperar/preservar detalles visuales y de contenido que aporten valor frente a la nueva UI simplificada.
+4. Añadir comprobación automatizada de imports/estructura y endurecer CI.
+5. Documentar arquitectura TO-BE y operación de despliegue.
+6. Decidir el mecanismo final de generación del `index.html` desplegable.
+7. Sustituir el bundle heredado solo tras validación funcional suficiente.
 
 ## Decisiones pendientes del cliente
 
-Ninguna en este momento.
+Ninguna decisión de producto pendiente. La siguiente parada válida será la validación humana de la preview antes de promoverla a producción.
