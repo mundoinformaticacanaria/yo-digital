@@ -1,5 +1,9 @@
 export class WaveformRenderer {
-  constructor({ AudioContextRef = globalThis.AudioContext || globalThis.webkitAudioContext, requestFrame = globalThis.requestAnimationFrame, cancelFrame = globalThis.cancelAnimationFrame } = {}) {
+  constructor({
+    AudioContextRef = globalThis.AudioContext || globalThis.webkitAudioContext,
+    requestFrame = (callback) => globalThis.requestAnimationFrame(callback),
+    cancelFrame = (frameId) => globalThis.cancelAnimationFrame(frameId),
+  } = {}) {
     this.AudioContextRef = AudioContextRef;
     this.requestFrame = requestFrame;
     this.cancelFrame = cancelFrame;
