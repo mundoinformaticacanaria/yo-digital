@@ -31,20 +31,34 @@ export class TrainingController {
   async startRecording({ canvas } = {}) {
     const stream = await this.service.startRecording();
     this.recording = true;
-    this.waveform?.start?.({ stream, canvas, active: () => this.recording });
+
+    try {
+      this.waveform?.start?.({ stream, canvas, active: () => this.recording });
+    } catch (error) {
+      console.warn("Waveform disabled after browser compatibility error", error);
+    }
+
     return this.currentPhrase;
   }
 
   async stopRecording() {
     const sample = await this.service.stopAndSave({ prompt: this.currentPhrase, label: `Frase ${this.phraseIndex + 1}` });
     this.recording = false;
-    this.waveform?.stop?.();
+    try {
+      this.waveform?.stop?.();
+    } catch (error) {
+      console.warn("Could not stop waveform cleanly", error);
+    }
     return sample;
   }
 
   cancelRecording() {
     this.recording = false;
-    this.waveform?.stop?.();
+    try {
+      this.waveform?.stop?.();
+    } catch (error) {
+      console.warn("Could not stop waveform cleanly", error);
+    }
     this.service.cancelRecording();
   }
 
