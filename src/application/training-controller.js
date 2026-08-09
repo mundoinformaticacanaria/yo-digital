@@ -28,37 +28,22 @@ export class TrainingController {
     return this.currentPhrase;
   }
 
-  async startRecording({ canvas } = {}) {
-    const stream = await this.service.startRecording();
+  async startRecording() {
+    await this.service.startRecording();
     this.recording = true;
-
-    try {
-      this.waveform?.start?.({ stream, canvas, active: () => this.recording });
-    } catch (error) {
-      console.warn("Waveform disabled after browser compatibility error", error);
-    }
-
+    // Waveform is intentionally disabled while validating Android/browser recording.
+    // Recording must never depend on Web Audio rendering.
     return this.currentPhrase;
   }
 
   async stopRecording() {
     const sample = await this.service.stopAndSave({ prompt: this.currentPhrase, label: `Frase ${this.phraseIndex + 1}` });
     this.recording = false;
-    try {
-      this.waveform?.stop?.();
-    } catch (error) {
-      console.warn("Could not stop waveform cleanly", error);
-    }
     return sample;
   }
 
   cancelRecording() {
     this.recording = false;
-    try {
-      this.waveform?.stop?.();
-    } catch (error) {
-      console.warn("Could not stop waveform cleanly", error);
-    }
     this.service.cancelRecording();
   }
 
