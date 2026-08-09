@@ -27,6 +27,8 @@ export class ConsultationController {
 
   listen(handlers = {}) {
     if (!this.recognizer?.isSupported?.()) return false;
+    // Chrome/Android may abort recognition when speechSynthesis is still active.
+    this.synthesizer?.stop?.();
     this.recognizer.listen(handlers);
     return true;
   }
