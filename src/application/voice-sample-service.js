@@ -11,7 +11,7 @@ export class VoiceSampleService {
   }
 
   async startRecording() {
-    await this.recorder.start();
+    return this.recorder.start();
   }
 
   async stopAndSave({ prompt = "", label = "" } = {}) {
