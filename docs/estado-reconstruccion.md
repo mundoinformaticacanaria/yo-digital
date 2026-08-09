@@ -37,7 +37,18 @@ Correcciones aplicadas:
 - La visualización waveform queda temporalmente desacoplada y desactivada durante esta validación para demostrar que MediaRecorder funciona de forma independiente.
 - Antes de iniciar SpeechRecognition se cancela cualquier `speechSynthesis` en curso, evitando que Chrome/Android aborte el reconocimiento por conflicto de audio.
 
-Estado: correcciones publicadas en `main`; pendiente revalidación humana en GitHub Pages.
+### 2026-08-09 · Regla de duración de voz en todas las consultas
+
+Decisión de producto: la entrada por voz no debe finalizar por una pausa natural del usuario.
+
+Comportamiento requerido y aplicado:
+
+- En "Aplicación a medida" y "Arquitectura / consultoría", pulsar `Hablar` inicia una sesión de dictado.
+- El botón cambia a `Terminar voz` y el usuario decide cuándo cerrar la intervención.
+- Si el navegador corta internamente SpeechRecognition por silencio, el adaptador reinicia el ciclo mientras la sesión siga activa.
+- El texto final e intermedio se acumula en el mismo campo de respuesta.
+- Existe un límite máximo de 60 segundos; al alcanzarlo, la sesión se cierra automáticamente conservando el texto reconocido.
+- El entrenamiento de dataset mantiene la misma filosofía: parada manual o automática a los 60 segundos.
 
 ## Producción
 
@@ -49,7 +60,7 @@ Preview técnica de la reconstrucción:
 
 ## Trabajo restante antes de sustituir producción
 
-1. Revalidar en navegador real los dos flujos de micrófono tras las correcciones actuales.
+1. Revalidar en navegador real los flujos de voz con parada manual y pausas naturales.
 2. Validar persistencia IndexedDB y exportación del dataset.
 3. Corregir cualquier incompatibilidad restante.
 4. Reintegrar waveform una vez demostrada la grabación base.
@@ -60,4 +71,4 @@ Preview técnica de la reconstrucción:
 
 ## Decisiones pendientes del cliente
 
-Ninguna decisión de producto pendiente. La siguiente parada válida es la revalidación humana del micrófono en la preview.
+Ninguna decisión de producto pendiente. La siguiente parada válida es la revalidación humana del dictado en la preview.
