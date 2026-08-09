@@ -24,15 +24,20 @@
 
 ## Incidencias de validación
 
-### 2026-08-09 · `Illegal invocation` al iniciar grabación
+### 2026-08-09 · Micrófono en navegador real
 
-Detectado en navegador real al pulsar el micrófono del entrenamiento de voz.
+Se observaron dos síntomas distintos:
 
-Causa: `requestAnimationFrame` y `cancelAnimationFrame` se almacenaban como referencias directas en `WaveformRenderer`. Algunos navegadores exigen que estas APIs se invoquen con su contexto global original, provocando `Illegal invocation` cuando se llamaban como métodos de otra instancia.
+1. Entrenamiento de voz: `Illegal invocation` al iniciar la grabación.
+2. Consulta "Aplicación a medida": Web Speech API devolvía `aborted`.
 
-Corrección: los defaults son ahora wrappers que invocan explícitamente `globalThis.requestAnimationFrame(...)` y `globalThis.cancelAnimationFrame(...)`. Se añadió test de regresión para el adaptador de waveform.
+Correcciones aplicadas:
 
-Estado: corregido en `main`; pendiente revalidación humana en GitHub Pages.
+- `getUserMedia` se invoca con `mediaDevices` como contexto explícito y el grabador informa ahora de la fase exacta (`getUserMedia` o `MediaRecorder`) si vuelve a fallar.
+- La visualización waveform queda temporalmente desacoplada y desactivada durante esta validación para demostrar que MediaRecorder funciona de forma independiente.
+- Antes de iniciar SpeechRecognition se cancela cualquier `speechSynthesis` en curso, evitando que Chrome/Android aborte el reconocimiento por conflicto de audio.
+
+Estado: correcciones publicadas en `main`; pendiente revalidación humana en GitHub Pages.
 
 ## Producción
 
@@ -44,15 +49,15 @@ Preview técnica de la reconstrucción:
 
 ## Trabajo restante antes de sustituir producción
 
-1. Revalidar la preview en navegador real tras la corrección de waveform.
-2. Validar desktop/móvil, micrófono, SpeechRecognition, speechSynthesis, MediaRecorder e IndexedDB.
-3. Corregir cualquier incompatibilidad detectada en esa validación.
-4. Recuperar/preservar detalles visuales y de contenido que aporten valor frente a la nueva UI simplificada.
-5. Añadir comprobación automatizada de imports/estructura y endurecer CI.
-6. Documentar arquitectura TO-BE y operación de despliegue.
-7. Decidir el mecanismo final de generación del `index.html` desplegable.
+1. Revalidar en navegador real los dos flujos de micrófono tras las correcciones actuales.
+2. Validar persistencia IndexedDB y exportación del dataset.
+3. Corregir cualquier incompatibilidad restante.
+4. Reintegrar waveform una vez demostrada la grabación base.
+5. Recuperar/preservar detalles visuales y de contenido que aporten valor frente a la nueva UI simplificada.
+6. Endurecer CI y documentar operación de despliegue.
+7. Definir el mecanismo final de generación del artefacto desplegable.
 8. Sustituir el bundle heredado solo tras validación funcional suficiente.
 
 ## Decisiones pendientes del cliente
 
-Ninguna decisión de producto pendiente. La siguiente parada válida será la revalidación humana de la preview antes de promoverla a producción.
+Ninguna decisión de producto pendiente. La siguiente parada válida es la revalidación humana del micrófono en la preview.
