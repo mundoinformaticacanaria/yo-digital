@@ -111,18 +111,11 @@ view.bind({
         const state = await trainingController.state();
         state.recording = true;
         view.renderTraining(state);
-        const liveCanvas = root.querySelector("#waveform");
-        if (liveCanvas && voiceService.recorder.stream) {
-          trainingController.waveform.start({
-            stream: voiceService.recorder.stream,
-            canvas: liveCanvas,
-            active: () => trainingController.recording,
-          });
-        }
       }
     } catch (error) {
       trainingController.cancelRecording();
-      view.renderError(error.message);
+      console.error("Voice training recording failed", error);
+      view.renderError(`${error.name || "Error"}: ${error.message}`);
     }
   },
 
