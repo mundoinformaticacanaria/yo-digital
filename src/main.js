@@ -13,7 +13,7 @@ const root = document.querySelector("#app");
 const view = new AppView({ root });
 
 const consultationController = new ConsultationController({
-  recognizer: new BrowserSpeechRecognizer(),
+  recognizer: new BrowserSpeechRecognizer({ maxDurationMs: 60_000 }),
   synthesizer: new BrowserSpeechSynthesizer(),
 });
 
@@ -37,6 +37,13 @@ function clearRecordingTimeout() {
     globalThis.clearTimeout(recordingTimeoutId);
     recordingTimeoutId = null;
   }
+}
+
+function setConsultationMicState(listening) {
+  const button = root.querySelector('[data-action="listen"]');
+  if (!button) return;
+  button.textContent = listening ? "⏹ Terminar voz" : "🎙 Hablar";
+  button.setAttribute("aria-pressed", String(listening));
 }
 
 function showQuestion(question) {
@@ -109,12 +116,30 @@ view.bind({
   },
 
   onListen() {
+    if (consultationController.isListening) {
+      consultationController.stopListening({ notifyEnd: true });
+      setConsultationMicState(false);
+      return;
+    }
+
     const started = consultationController.listen({
       onInterim: (text) => view.setInterimTranscript(text),
       onFinal: (text) => view.setInterimTranscript(text),
-      onError: (reason) => view.renderError(`No pude usar el micrófono: ${reason}`),
+      onError: (reason) => {
+        if (reason !== "aborted") view.renderError(`No pude usar el micrófono: ${reason}`);
+      },
+      onEnd: (text) => {
+        if (text) view.setInterimTranscript(text);
+        setConsultationMicState(false);
+      },
     });
-    if (!started) view.renderError("El reconocimiento de voz no está disponible en este navegador.");
+
+    if (!started) {
+      view.renderError("El reconocimiento de voz no está disponible en este navegador.");
+      return;
+    }
+
+    setConsultationMicState(true);
   },
 
   onSpeakResult(result) {
