@@ -1,6 +1,6 @@
 # Estado de reconstrucción
 
-Última actualización: 2026-08-09
+Última actualización: 2026-08-11
 
 ## Completado
 
@@ -13,7 +13,7 @@
 - Grabación MediaRecorder separada, con restricciones de audio equivalentes al legado.
 - Persistencia local de muestras separada en repositorio IndexedDB.
 - Banco exacto de 22 frases fonéticas recuperado del bundle heredado.
-- Métricas del dataset recuperadas: duración, promedio, progreso y calidad.
+- Métricas del dataset recuperadas y corregidas para distinguir prueba instantánea de objetivo profesional.
 - Exportación ZIP recuperada con JSZip opcional y fallback a audios individuales.
 - Renderizado de waveform aislado mediante Web Audio API.
 - Controlador de entrenamiento reconstruido.
@@ -21,6 +21,10 @@
 - Preview aislada publicada en `preview/index.html` sin sustituir producción.
 - Tests de dominio, sesión, controladores, voz, dataset y waveform añadidos con `node:test`.
 - CI básica mediante GitHub Actions.
+- Reglas `.gitignore` añadidas para evitar publicar accidentalmente material biométrico de voz.
+- Dataset privado externo v1 preparado con 43 clips y ~6,19 min de voz útil.
+- Subconjunto privado IVC v1 preparado con 14 clips y ~1,90 min para una primera prueba de clonación instantánea.
+- Evaluación inicial de proveedores documentada en `docs/adr/004-voice-cloning-provider-evaluation.md`.
 
 ## Incidencias de validación
 
@@ -50,6 +54,12 @@ Comportamiento requerido y aplicado:
 - Existe un límite máximo de 60 segundos; al alcanzarlo, la sesión se cierra automáticamente conservando el texto reconocido.
 - El entrenamiento de dataset mantiene la misma filosofía: parada manual o automática a los 60 segundos.
 
+## Voz clonada
+
+El propietario aportó 8 audios y confirmó que contienen exclusivamente su voz. En los dos audios largos, las pausas corresponden a intervenciones telefónicas de otra persona que no quedaron registradas.
+
+Los originales no se modifican ni se suben al repositorio público. El procesamiento local produjo un dataset maestro normalizado y un subconjunto reducido para IVC. La siguiente acción externa requiere autorización expresa porque implica enviar material biométrico a un proveedor de voz y posiblemente contratar un plan de pago.
+
 ## Producción
 
 La URL principal sigue sirviendo el `index.html` heredado. La reconstrucción no ha reemplazado todavía producción.
@@ -67,8 +77,10 @@ Preview técnica de la reconstrucción:
 5. Recuperar/preservar detalles visuales y de contenido que aporten valor frente a la nueva UI simplificada.
 6. Endurecer CI y documentar operación de despliegue.
 7. Definir el mecanismo final de generación del artefacto desplegable.
-8. Sustituir el bundle heredado solo tras validación funcional suficiente.
+8. Crear una primera voz clonada cuando el cliente autorice el proveedor y el envío del audio.
+9. Diseñar proxy/tokenización para TTS dinámico sin exponer claves en GitHub Pages.
+10. Sustituir el bundle heredado solo tras validación funcional suficiente.
 
 ## Decisiones pendientes del cliente
 
-Ninguna decisión de producto pendiente. La siguiente parada válida es la revalidación humana del dictado en la preview.
+- Autorizar o rechazar el uso de un proveedor externo para crear la primera voz clonada, aceptando el envío de muestras biométricas y el coste/retención aplicables.
