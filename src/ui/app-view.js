@@ -162,7 +162,8 @@ export class AppView {
                 <div><strong>${state.summary.totalMinutes.toFixed(2)}</strong><span>min</span></div>
                 <div><strong>${state.summary.averageSeconds.toFixed(1)}s</strong><span>promedio</span></div>
               </div>
-              <div class="quality"><span style="width:${state.summary.progressPercent}%"></span></div>
+              <div class="quality"><span style="width:${state.summary.professionalProgressPercent}%"></span></div>
+              <p class="privacy-note">Objetivo profesional orientativo: 30 min · ${state.summary.professionalProgressPercent.toFixed(0)}%</p>
               <p class="privacy-note">${escapeHtml(state.summary.quality)}</p>
               <div class="actions dataset-actions">
                 <button class="primary" data-action="export-zip" ${state.samples.length ? "" : "disabled"}>Descargar ZIP</button>
