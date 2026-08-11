@@ -8,7 +8,7 @@ Encontrar una alternativa gratuita o local a ElevenLabs para generar la voz de Y
 
 ## Candidatos evaluados
 
-### 1. Chatterbox Multilingual V3 — candidato principal
+### 1. Chatterbox Multilingual V3 — candidato de mayor calidad, sujeto a hardware
 
 Repositorio oficial: https://github.com/resemble-ai/chatterbox
 Modelo general: https://huggingface.co/ResembleAI/chatterbox
@@ -20,17 +20,19 @@ Motivos:
 - Voice cloning mediante un audio de referencia.
 - Soporte oficial de español.
 - Existe un modelo específico `es-ES`, orientado a español de España.
-- El modelo general es de 0.5B parámetros y soporta ejecución `cuda`, `cpu` y `mps` según el repositorio oficial.
+- El modelo general soporta ejecución `cuda`, `cpu` y `mps` en el código oficial actual.
 - V3 prioriza mayor similitud de hablante, menor alucinación y habla más natural que las versiones previas.
 - El modelo oficial incluye watermarking de audio.
 
 Limitaciones:
 
 - Los assets del modelo específico `es-ES` ocupan varios GB.
-- Para una experiencia interactiva razonable es preferible GPU; CPU es posible pero debe medirse en el hardware real.
+- Para una experiencia interactiva razonable es preferible GPU.
+- Con solo ~3 GB de VRAM no se debe asumir que el modelo completo vaya a caber de forma cómoda en GPU; es necesario verificar el modelo exacto de NVIDIA y medir.
+- CPU es una ruta posible en el código actual, pero con 8 GB de RAM se considera una prueba de compatibilidad/rendimiento, no una plataforma objetivo garantizada.
 - GitHub Pages no puede ejecutar este modelo directamente: la síntesis dinámica necesitará un proceso local o un backend de inferencia.
 
-### 2. OpenVoice V2 — fallback ligero y comercialmente permisivo
+### 2. OpenVoice V2 — primera PoC recomendada para hardware modesto
 
 Repositorio oficial: https://github.com/myshell-ai/OpenVoice
 Uso oficial: https://github.com/myshell-ai/OpenVoice/blob/main/docs/USAGE.md
@@ -41,7 +43,7 @@ Motivos:
 - Clonación instantánea a partir de un clip corto.
 - Español soportado de forma nativa en V2.
 - Control de tono, acento, ritmo, pausas e intonación.
-- Arquitectura útil como fallback si Chatterbox resulta demasiado pesado.
+- Arquitectura más apropiada como primera prueba si el equipo tiene poca VRAM/RAM.
 
 Limitaciones:
 
@@ -72,21 +74,38 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - Proyecto técnicamente interesante y multilingüe.
 - Pesos sujetos a FISH AUDIO RESEARCH LICENSE, menos adecuada para una futura explotación comercial sencilla que MIT.
 
-## Decisión provisional
+## Hardware conocido provisionalmente
 
-Primera PoC: `Chatterbox Multilingual V3`, priorizando el modelo `es-ES`.
+Información aportada por el propietario, pendiente de confirmar cuando tenga acceso al PC:
 
-Fallback: `OpenVoice V2`.
+- RAM: 8 GB.
+- GPU: NVIDIA.
+- VRAM dedicada: aproximadamente 3 GB.
+- Modelo exacto de GPU: pendiente.
+- CPU: pendiente.
 
-No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con estas dos alternativas.
+## Decisión provisional actualizada
+
+Primera PoC: `OpenVoice V2`, por ser la opción con mejor encaje provisional para un equipo de 8 GB de RAM y ~3 GB de VRAM.
+
+Segunda PoC/comparativa: `Chatterbox Multilingual V3` / `es-ES`, si el modelo exacto de GPU y las pruebas de memoria permiten ejecutarlo razonablemente. Si no, se podrá medir en CPU como experimento, sin asumir rendimiento interactivo.
+
+No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con estas alternativas.
 
 ## Arquitectura de PoC
 
 1. Dataset de voz permanece fuera de GitHub.
 2. Ejecutar clonación/inferencia local en el equipo del propietario.
-3. Generar frases de prueba y comparar similitud, naturalidad, ritmo y pronunciación canaria/española.
-4. Solo después de validar calidad se decidirá cómo servir TTS dinámico al sitio público.
+3. Generar exactamente las mismas frases de prueba con cada motor.
+4. Comparar similitud, naturalidad, ritmo, pronunciación canaria/española, tiempo de generación y consumo de RAM/VRAM.
+5. Solo después de validar calidad se decidirá cómo servir TTS dinámico al sitio público.
 
 ## Dato pendiente para continuar
 
-Especificaciones del equipo donde se ejecutará la PoC: CPU, RAM y especialmente GPU/VRAM. Ese dato determina si se prueba primero Chatterbox V3 en GPU, en CPU o si conviene arrancar con OpenVoice V2.
+Confirmar cuando sea posible:
+
+- modelo exacto de GPU NVIDIA;
+- VRAM dedicada real;
+- CPU.
+
+Con los datos provisionales ya se puede preparar la PoC para OpenVoice V2; el dato exacto de GPU se usará para decidir si merece la pena ejecutar también Chatterbox en CUDA.
