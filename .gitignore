@@ -1,0 +1,16 @@
+# Local/private voice assets — never commit biometric voice material
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.ogg
+*.flac
+voice-dataset/
+voice-datasets/
+dataset/
+datasets/
+
+# Local tooling / OS
+node_modules/
+.DS_Store
+Thumbs.db
