@@ -84,6 +84,19 @@ Información aportada por el propietario, pendiente de confirmar cuando tenga ac
 - Modelo exacto de GPU: pendiente.
 - CPU: pendiente.
 
+## ¿Usar el teléfono como host de la PoC?
+
+Aunque un teléfono moderno puede tener más RAM que este PC y disponer de NPU/GPU móvil potente, para esta PoC no se considera la plataforma preferente.
+
+Razones técnicas:
+
+- OpenVoice V2 documenta oficialmente un entorno Linux/Python/PyTorch; Windows aparece mediante guías comunitarias y no hay una ruta oficial Android.
+- Chatterbox documenta `cuda`, `cpu` y `mps`, pero no una ruta Android/Adreno.
+- Una GPU móvil Adreno no ofrece CUDA, por lo que no puede aprovechar directamente el camino de aceleración NVIDIA pensado por estos proyectos.
+- Portar los modelos a ONNX/ExecuTorch/NNAPI u otra pila móvil sería un proyecto adicional de optimización y compatibilidad, no una PoC rápida de calidad de voz.
+
+Conclusión: aunque el teléfono pudiera superar al PC en algunas métricas generales de CPU/RAM, el PC NVIDIA sigue siendo la plataforma más útil para validar OpenVoice/Chatterbox debido al ecosistema Python/PyTorch/CUDA. El móvil se reconsiderará más adelante solo si queremos inferencia completamente local en Android.
+
 ## Decisión provisional actualizada
 
 Primera PoC: `OpenVoice V2`, por ser la opción con mejor encaje provisional para un equipo de 8 GB de RAM y ~3 GB de VRAM.
