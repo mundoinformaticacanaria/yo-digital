@@ -92,10 +92,11 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - `uv` 0.12.3 instalado para el usuario en `/home/xerach/.local/bin` mediante el instalador oficial y validado desde la shell actual.
 - Python aislado 3.9.25 instalado correctamente mediante `uv python install 3.9`.
 - Directorio local de PoC creado: `~/yo-digital-voice-poc`.
-- Entorno virtual creado dentro de la PoC: `~/yo-digital-voice-poc/.venv`, basado en CPython 3.9.25, y activado correctamente.
+- Entorno virtual creado dentro de la PoC: `~/yo-digital-voice-poc/.venv`, basado en CPython 3.9.25, activado y validado con `python --version`.
+- Git disponible: 2.43.0.
 - CPU: pendiente, no bloquea la primera prueba.
 
-La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python y de `uv` confirma que el entorno de PoC es Windows 11 + Ubuntu 24.04.4 LTS sobre WSL2, con la GPU expuesta correctamente al entorno Linux. No se instalarán drivers NVIDIA dentro de WSL y no se sustituirá el Python 3.12 del sistema.
+La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python, de `uv` y de Git confirma que el entorno de PoC es Windows 11 + Ubuntu 24.04.4 LTS sobre WSL2, con la GPU expuesta correctamente al entorno Linux. No se instalarán drivers NVIDIA dentro de WSL y no se sustituirá el Python 3.12 del sistema.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -122,12 +123,13 @@ Estrategia de ejecución para GTX 1060 3GB:
 4. Python del sistema: 3.12.3; no se modificará.
 5. Python aislado 3.9.25: instalado correctamente con `uv`.
 6. `uv` 0.12.3 está instalado y operativo.
-7. Directorio y `.venv` aislados de la PoC: creados y activados.
-8. Verificar que `python` dentro del `.venv` resuelve a 3.9.25 antes de instalar dependencias.
-9. Usar una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
-10. Probar inferencia CUDA y medir VRAM real.
-11. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-12. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+7. Directorio y `.venv` aislados de la PoC: creados, activados y validados.
+8. Git 2.43.0: disponible.
+9. Clonar el repositorio oficial `myshell-ai/OpenVoice` dentro del directorio de PoC.
+10. Usar una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
+11. Probar inferencia CUDA y medir VRAM real.
+12. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+13. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -141,4 +143,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. El `.venv` de la PoC está activo. Siguiente comprobación: ejecutar `python --version` y confirmar que el entorno activo usa Python 3.9.25 antes de instalar cualquier dependencia.
+Guiar al propietario de uno en uno. El entorno está listo para descargar código. Siguiente paso: clonar únicamente el repositorio oficial `https://github.com/myshell-ai/OpenVoice.git` dentro de `~/yo-digital-voice-poc`; no instalar dependencias todavía.
