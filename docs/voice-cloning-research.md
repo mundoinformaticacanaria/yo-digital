@@ -99,6 +99,16 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 
 La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python, de `uv` y de Git confirma que el entorno de PoC es Windows 11 + Ubuntu 24.04.4 LTS sobre WSL2, con la GPU expuesta correctamente al entorno Linux. No se instalarán drivers NVIDIA dentro de WSL y no se sustituirá el Python 3.12 del sistema.
 
+## Estado de instalación de OpenVoice V2
+
+- Primer `uv pip install -e .`: falló compilando `av==10.0.0` porque faltaba `pkg-config`.
+- Cadena de dependencia confirmada: `myshell-openvoice` → `faster-whisper==0.9.0` → `av>=10.dev0,<11.dev0`; el resolver selecciona `av==10.0.0` y en este entorno necesita compilarse desde fuente.
+- `pkg-config` instalado correctamente.
+- Segundo intento: PyAV detectó que faltaban las librerías de desarrollo FFmpeg `avformat`, `avcodec`, `avdevice`, `avutil`, `avfilter`, `swscale` y `swresample`.
+- El primer intento de instalar esas librerías falló por índices APT obsoletos con varios errores 404; se corrigió con `sudo apt update`.
+- Librerías de desarrollo FFmpeg instaladas correctamente: `libavformat-dev`, `libavcodec-dev`, `libavdevice-dev`, `libavutil-dev`, `libavfilter-dev`, `libswscale-dev` y `libswresample-dev`.
+- Siguiente validación: repetir `uv pip install -e .` dentro del `.venv` activo y registrar el siguiente bloqueo, si aparece.
+
 ## ¿Usar el teléfono como host de la PoC?
 
 Aunque un teléfono moderno puede tener más RAM que este PC y disponer de NPU/GPU móvil potente, para esta PoC no se considera la plataforma preferente.
@@ -127,8 +137,8 @@ Estrategia de ejecución para GTX 1060 3GB:
 7. Directorio y `.venv` aislados de la PoC: creados, activados y validados.
 8. Git 2.43.0: disponible.
 9. Repositorio oficial `myshell-ai/OpenVoice`: clonado correctamente.
-10. Entrar en `~/yo-digital-voice-poc/OpenVoice` y verificar el estado del repositorio antes de instalar dependencias.
-11. Instalar OpenVoice según la guía oficial (`pip install -e .`) dentro del `.venv`.
+10. Dependencias de sistema necesarias para compilar PyAV (`pkg-config` + librerías FFmpeg de desarrollo): instaladas.
+11. Repetir `uv pip install -e .` dentro del `.venv` y resolver únicamente el siguiente bloqueo real, si lo hubiera.
 12. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
 13. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
 14. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
@@ -146,4 +156,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. El repositorio oficial ya está clonado en `~/yo-digital-voice-poc/OpenVoice`. Siguiente paso: entrar en esa carpeta con `cd OpenVoice`. No instalar dependencias todavía.
+Guiar al propietario de uno en uno. Las dependencias de sistema detectadas por PyAV ya están instaladas. Siguiente paso: repetir `uv pip install -e .` dentro de `~/yo-digital-voice-poc/OpenVoice` con el `.venv` activo y evaluar el resultado antes de instalar nada más.
