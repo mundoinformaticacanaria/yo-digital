@@ -78,7 +78,8 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 ## Hardware confirmado
 
 - Sistema host: Windows 11.
-- Entorno Linux disponible: Ubuntu bajo WSL/WSL2; versión exacta aún pendiente de confirmar por comando.
+- Entorno Linux disponible: Ubuntu bajo WSL2.
+- Kernel WSL2 confirmado: `6.6.87.2-microsoft-standard-WSL2`.
 - RAM: 8 GB.
 - GPU: NVIDIA GeForce GTX 1060 3GB.
 - VRAM dedicada: 3072 MiB.
@@ -89,7 +90,7 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - En la comprobación inicial había ~1167 MiB de VRAM ocupada y ~2 % de uso de GPU; `nvidia-smi` no mostró procesos Linux en ejecución.
 - CPU: pendiente, no bloquea la primera prueba.
 
-La validación de `nvidia-smi` confirma que la GPU se expone correctamente al entorno Ubuntu/WSL, por lo que podemos continuar con una PoC CUDA sin instalar drivers NVIDIA dentro de WSL.
+La validación de `nvidia-smi` y del kernel confirma que Ubuntu se ejecuta sobre WSL2 y que la GPU se expone correctamente al entorno Linux, por lo que podemos continuar con una PoC CUDA sin instalar drivers NVIDIA dentro de WSL.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -110,13 +111,14 @@ Primera PoC: `OpenVoice V2`.
 
 Estrategia de ejecución para GTX 1060 3GB:
 
-1. Confirmar que Ubuntu se ejecuta bajo WSL2.
+1. WSL2: validado por kernel `6.6.87.2-microsoft-standard-WSL2`.
 2. GPU/driver desde Ubuntu: validado con `nvidia-smi`.
-3. Comprobar la versión de Python disponible antes de instalar nada.
-4. Usar un entorno aislado y una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
-5. Probar inferencia CUDA y medir VRAM real.
-6. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-7. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+3. Identificar la versión exacta de Ubuntu antes de preparar Python.
+4. Comprobar la versión de Python disponible antes de instalar nada.
+5. Usar un entorno aislado y una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
+6. Probar inferencia CUDA y medir VRAM real.
+7. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+8. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -130,4 +132,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. Siguiente comprobación: ejecutar `uname -r` dentro de Ubuntu para confirmar WSL2 mediante la cadena del kernel. No instalar nada todavía.
+Guiar al propietario de uno en uno. Siguiente comprobación: ejecutar `lsb_release -a` dentro de Ubuntu para identificar la versión exacta de la distribución. No instalar nada todavía.
