@@ -102,14 +102,15 @@ La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python, de `uv` y de G
 ## Estado de instalación de OpenVoice V2
 
 - Primer `uv pip install -e .`: falló compilando `av==10.0.0` porque faltaba `pkg-config`.
-- Cadena de dependencia confirmada: `myshell-openvoice` → `faster-whisper==0.9.0` → `av>=10.dev0,<11.dev0`; el resolver selecciona `av==10.0.0` y en este entorno necesita compilarse desde fuente.
-- `pkg-config` instalado correctamente.
-- Segundo intento: PyAV detectó que faltaban las librerías de desarrollo FFmpeg `avformat`, `avcodec`, `avdevice`, `avutil`, `avfilter`, `swscale` y `swresample`.
-- El primer intento de instalar esas librerías falló por índices APT obsoletos con varios errores 404; se corrigió con `sudo apt update`.
-- Librerías de desarrollo FFmpeg instaladas correctamente: `libavformat-dev`, `libavcodec-dev`, `libavdevice-dev`, `libavutil-dev`, `libavfilter-dev`, `libswscale-dev` y `libswresample-dev`.
-- Tercer intento: PyAV 10.0.0 llega ya a Cython, pero falla en `av/logging.pyx` por incompatibilidad de firmas `except`/`noexcept` al compilar con Cython 3.
-- Causa confirmada en el código oficial de PyAV 10.0.0: su `pyproject.toml` declara `cython` sin fijar versión, por lo que un build aislado actual puede recibir Cython 3. El propio proyecto PyAV resolvió posteriormente el soporte de Cython 3 en PR #1145; durante esa corrección se validó explícitamente que Cython 0.29.36 compilaba el código anterior.
-- Estrategia conservadora: mantener primero las versiones que exige OpenVoice (`faster-whisper==0.9.0` y `av==10.0.0`), instalar Cython 0.29.36 en el `.venv` y construir PyAV sin aislamiento para evitar que el build vuelva a introducir Cython 3. No se actualizará `av`/`faster-whisper` hasta demostrar que esta ruta upstream-compatible no funciona.
+- Cadena de dependencia original: `myshell-openvoice` → `faster-whisper==0.9.0` → `av>=10.dev0,<11.dev0`; el resolver selecciona `av==10.0.0`.
+- `pkg-config` y las librerías de desarrollo FFmpeg (`libavformat-dev`, `libavcodec-dev`, `libavdevice-dev`, `libavutil-dev`, `libavfilter-dev`, `libswscale-dev`, `libswresample-dev`) quedaron instaladas correctamente.
+- PyAV 10.0.0 falló primero con Cython 3; se fijó Cython 0.29.36 y se repitió sin aislamiento.
+- Con Cython 0.29.36, PyAV 10.0.0 avanzó hasta compilar contra FFmpeg 6.1, pero falló porque `AVFMT_FLAG_PRIV_OPT` ya no existe en esa versión de FFmpeg. Por tanto, PyAV 10 no es una combinación viable con el FFmpeg 6.1 del Ubuntu 24.04 actual sin parchear o degradar FFmpeg.
+- Se eligió la ruta menos invasiva para el sistema: mantener Ubuntu/FFmpeg actual y probar `faster-whisper==1.0.0`, que depende de `av==11.*`, en lugar de degradar FFmpeg del sistema.
+- `uv pip install "faster-whisper==1.0.0"` completó correctamente.
+- Estado confirmado tras esa instalación: `faster-whisper==1.0.0`, `av==11.0.0`, `ctranslate2==4.8.1`, `onnxruntime==1.19.2`, `tokenizers==0.13.3`, entre otras dependencias.
+- El `setup.py` oficial de OpenVoice sigue fijando `faster-whisper==0.9.0`, por lo que no se debe ejecutar de nuevo `uv pip install -e .` con resolución normal: volvería a intentar degradar `faster-whisper` y PyAV.
+- Próxima estrategia: instalar el paquete OpenVoice editable con `--no-deps`, conservando `faster-whisper==1.0.0`/`av==11.0.0`; después instalar manualmente las demás dependencias declaradas por OpenVoice y validar imports antes de continuar con MeloTTS.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -130,22 +131,17 @@ Primera PoC: `OpenVoice V2`.
 
 Estrategia de ejecución para GTX 1060 3GB:
 
-1. WSL2: validado por kernel `6.6.87.2-microsoft-standard-WSL2`.
-2. GPU/driver desde Ubuntu: validado con `nvidia-smi`.
-3. Distribución: Ubuntu 24.04.4 LTS (`noble`) confirmada.
-4. Python del sistema: 3.12.3; no se modificará.
-5. Python aislado 3.9.25: instalado correctamente con `uv`.
-6. `uv` 0.12.3 está instalado y operativo.
-7. Directorio y `.venv` aislados de la PoC: creados, activados y validados.
-8. Git 2.43.0: disponible.
-9. Repositorio oficial `myshell-ai/OpenVoice`: clonado correctamente.
-10. Dependencias de sistema necesarias para compilar PyAV (`pkg-config` + librerías FFmpeg de desarrollo): instaladas.
-11. Fijar Cython 0.29.36 dentro del `.venv` para compilar el PyAV 10.0.0 heredado por `faster-whisper==0.9.0`.
-12. Construir/instalar PyAV 10.0.0 sin aislamiento y, si funciona, reanudar `uv pip install -e .`.
-13. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
-14. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
-15. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-16. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+1. WSL2, GPU, Ubuntu y Python aislado: validados.
+2. OpenVoice clonado en `~/yo-digital-voice-poc/OpenVoice`.
+3. Dependencias de sistema para PyAV/FFmpeg: instaladas.
+4. PyAV 10 descartado en este Ubuntu por incompatibilidad con FFmpeg 6.1 (`AVFMT_FLAG_PRIV_OPT`).
+5. `faster-whisper==1.0.0` + `av==11.0.0`: instalados correctamente.
+6. Instalar OpenVoice editable con `--no-deps` para evitar que su pin histórico fuerce `faster-whisper==0.9.0`.
+7. Instalar manualmente el resto de dependencias de OpenVoice y validar imports.
+8. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
+9. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
+10. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+11. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -159,4 +155,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. El siguiente paso es instalar Cython 0.29.36, `setuptools` y `wheel` dentro del `.venv` activo. Después se intentará instalar `av==10.0.0` con `--no-build-isolation`, para impedir que el build aislado vuelva a usar Cython 3.
+Guiar al propietario de uno en uno. Siguiente paso: desde `~/yo-digital-voice-poc/OpenVoice` con el `.venv` activo, ejecutar `uv pip install -e . --no-deps`. No volver a usar la resolución normal de dependencias mientras OpenVoice siga fijando `faster-whisper==0.9.0`.
