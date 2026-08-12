@@ -78,14 +78,18 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 ## Hardware confirmado
 
 - Sistema host: Windows 11.
-- Entorno Linux disponible: Ubuntu bajo WSL/WSL2 (confirmado visualmente desde el Explorador de archivos de Windows; versión exacta de WSL pendiente de comprobar).
+- Entorno Linux disponible: Ubuntu bajo WSL/WSL2; versión exacta aún pendiente de confirmar por comando.
 - RAM: 8 GB.
 - GPU: NVIDIA GeForce GTX 1060 3GB.
-- VRAM dedicada: 3 GB.
+- VRAM dedicada: 3072 MiB.
 - Arquitectura GPU: Pascal; compute capability 6.1.
+- Driver NVIDIA visible desde WSL: 582.28.
+- `nvidia-smi` visible y operativo dentro de Ubuntu.
+- `nvidia-smi` informa `CUDA Version: 13.0`; este valor indica la versión CUDA máxima soportada por el driver, no demuestra que exista un CUDA Toolkit 13.0 instalado dentro de Ubuntu.
+- En la comprobación inicial había ~1167 MiB de VRAM ocupada y ~2 % de uso de GPU; `nvidia-smi` no mostró procesos Linux en ejecución.
 - CPU: pendiente, no bloquea la primera prueba.
 
-NVIDIA mantiene Pascal / compute capability 6.x dentro de CUDA 12.x, pero la arquitectura queda fuera de la línea futura posterior; para esta PoC se priorizará una versión de PyTorch/CUDA compatible con Pascal en lugar de instalar ciegamente la versión CUDA más reciente.
+La validación de `nvidia-smi` confirma que la GPU se expone correctamente al entorno Ubuntu/WSL, por lo que podemos continuar con una PoC CUDA sin instalar drivers NVIDIA dentro de WSL.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -106,10 +110,10 @@ Primera PoC: `OpenVoice V2`.
 
 Estrategia de ejecución para GTX 1060 3GB:
 
-1. Confirmar que Ubuntu se ejecuta bajo WSL2 y que abre correctamente una terminal.
-2. Validar desde Ubuntu/WSL2 que la GPU y el driver NVIDIA son visibles con `nvidia-smi`.
-3. Usar Python 3.9, como recomienda la guía oficial de OpenVoice.
-4. Empezar con una combinación PyTorch/CUDA que conserve compatibilidad Pascal; CUDA 11.8 es la opción conservadora inicial.
+1. Confirmar que Ubuntu se ejecuta bajo WSL2.
+2. GPU/driver desde Ubuntu: validado con `nvidia-smi`.
+3. Comprobar la versión de Python disponible antes de instalar nada.
+4. Usar un entorno aislado y una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
 5. Probar inferencia CUDA y medir VRAM real.
 6. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
 7. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
@@ -126,4 +130,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. Primer paso: abrir la aplicación `Ubuntu` desde el menú Inicio de Windows. No instalar ni ejecutar más comandos hasta verificar que la terminal Ubuntu abre correctamente.
+Guiar al propietario de uno en uno. Siguiente comprobación: ejecutar `uname -r` dentro de Ubuntu para confirmar WSL2 mediante la cadena del kernel. No instalar nada todavía.
