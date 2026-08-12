@@ -1,6 +1,6 @@
 # Investigación de clonación de voz local/gratuita
 
-Última actualización: 2026-08-11
+Última actualización: 2026-08-12
 
 ## Objetivo
 
@@ -28,7 +28,7 @@ Limitaciones:
 
 - Los assets del modelo específico `es-ES` ocupan varios GB.
 - Para una experiencia interactiva razonable es preferible GPU.
-- Con solo ~3 GB de VRAM no se debe asumir que el modelo completo vaya a caber de forma cómoda en GPU; es necesario verificar el modelo exacto de NVIDIA y medir.
+- Con 3 GB de VRAM no se asume que el modelo completo vaya a caber de forma cómoda en GPU.
 - CPU es una ruta posible en el código actual, pero con 8 GB de RAM se considera una prueba de compatibilidad/rendimiento, no una plataforma objetivo garantizada.
 - GitHub Pages no puede ejecutar este modelo directamente: la síntesis dinámica necesitará un proceso local o un backend de inferencia.
 
@@ -49,6 +49,7 @@ Limitaciones:
 
 - Menor foco actual que Chatterbox en calidad conversacional moderna.
 - Instalación V2 depende también de MeloTTS.
+- La instalación oficial está documentada para Linux; Windows tiene guías comunitarias.
 - Igual que Chatterbox, no puede ejecutarse directamente desde GitHub Pages como solución dinámica completa.
 
 ### 3. F5-TTS — descartado para Yo-digital comercial
@@ -74,15 +75,15 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - Proyecto técnicamente interesante y multilingüe.
 - Pesos sujetos a FISH AUDIO RESEARCH LICENSE, menos adecuada para una futura explotación comercial sencilla que MIT.
 
-## Hardware conocido provisionalmente
-
-Información aportada por el propietario, pendiente de confirmar cuando tenga acceso al PC:
+## Hardware confirmado
 
 - RAM: 8 GB.
-- GPU: NVIDIA.
-- VRAM dedicada: aproximadamente 3 GB.
-- Modelo exacto de GPU: pendiente.
-- CPU: pendiente.
+- GPU: NVIDIA GeForce GTX 1060 3GB.
+- VRAM dedicada: 3 GB.
+- Arquitectura GPU: Pascal; compute capability 6.1.
+- CPU: pendiente, no bloquea la primera prueba.
+
+NVIDIA mantiene Pascal / compute capability 6.x dentro de CUDA 12.x, pero la arquitectura queda fuera de la línea futura posterior; para esta PoC se priorizará una versión de PyTorch/CUDA compatible con Pascal en lugar de instalar ciegamente la versión CUDA más reciente.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -97,13 +98,20 @@ Razones técnicas:
 
 Conclusión: aunque el teléfono pudiera superar al PC en algunas métricas generales de CPU/RAM, el PC NVIDIA sigue siendo la plataforma más útil para validar OpenVoice/Chatterbox debido al ecosistema Python/PyTorch/CUDA. El móvil se reconsiderará más adelante solo si queremos inferencia completamente local en Android.
 
-## Decisión provisional actualizada
+## Decisión actual
 
-Primera PoC: `OpenVoice V2`, por ser la opción con mejor encaje provisional para un equipo de 8 GB de RAM y ~3 GB de VRAM.
+Primera PoC: `OpenVoice V2`.
 
-Segunda PoC/comparativa: `Chatterbox Multilingual V3` / `es-ES`, si el modelo exacto de GPU y las pruebas de memoria permiten ejecutarlo razonablemente. Si no, se podrá medir en CPU como experimento, sin asumir rendimiento interactivo.
+Estrategia de ejecución para GTX 1060 3GB:
 
-No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con estas alternativas.
+1. Validar primero que WSL2 expone correctamente la GPU con `nvidia-smi`.
+2. Usar Python 3.9, como recomienda la guía oficial de OpenVoice.
+3. Empezar con una combinación PyTorch/CUDA que conserve compatibilidad Pascal; CUDA 11.8 es la opción conservadora inicial.
+4. Probar inferencia CUDA y medir VRAM real.
+5. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+6. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+
+No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
 ## Arquitectura de PoC
 
@@ -113,12 +121,6 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con estas 
 4. Comparar similitud, naturalidad, ritmo, pronunciación canaria/española, tiempo de generación y consumo de RAM/VRAM.
 5. Solo después de validar calidad se decidirá cómo servir TTS dinámico al sitio público.
 
-## Dato pendiente para continuar
+## Próximo paso operativo
 
-Confirmar cuando sea posible:
-
-- modelo exacto de GPU NVIDIA;
-- VRAM dedicada real;
-- CPU.
-
-Con los datos provisionales ya se puede preparar la PoC para OpenVoice V2; el dato exacto de GPU se usará para decidir si merece la pena ejecutar también Chatterbox en CUDA.
+Comprobar desde WSL2/Debian que la GTX 1060 es visible mediante `nvidia-smi`. Si esa comprobación es correcta, preparar el entorno aislado de OpenVoice V2 y comenzar la PoC.
