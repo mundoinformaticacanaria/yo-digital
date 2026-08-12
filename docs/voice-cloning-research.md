@@ -94,6 +94,7 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - Directorio local de PoC creado: `~/yo-digital-voice-poc`.
 - Entorno virtual creado dentro de la PoC: `~/yo-digital-voice-poc/.venv`, basado en CPython 3.9.25, activado y validado con `python --version`.
 - Git disponible: 2.43.0.
+- Repositorio oficial `myshell-ai/OpenVoice` clonado correctamente en `~/yo-digital-voice-poc/OpenVoice`.
 - CPU: pendiente, no bloquea la primera prueba.
 
 La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python, de `uv` y de Git confirma que el entorno de PoC es Windows 11 + Ubuntu 24.04.4 LTS sobre WSL2, con la GPU expuesta correctamente al entorno Linux. No se instalarán drivers NVIDIA dentro de WSL y no se sustituirá el Python 3.12 del sistema.
@@ -125,11 +126,13 @@ Estrategia de ejecución para GTX 1060 3GB:
 6. `uv` 0.12.3 está instalado y operativo.
 7. Directorio y `.venv` aislados de la PoC: creados, activados y validados.
 8. Git 2.43.0: disponible.
-9. Clonar el repositorio oficial `myshell-ai/OpenVoice` dentro del directorio de PoC.
-10. Usar una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
-11. Probar inferencia CUDA y medir VRAM real.
-12. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-13. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+9. Repositorio oficial `myshell-ai/OpenVoice`: clonado correctamente.
+10. Entrar en `~/yo-digital-voice-poc/OpenVoice` y verificar el estado del repositorio antes de instalar dependencias.
+11. Instalar OpenVoice según la guía oficial (`pip install -e .`) dentro del `.venv`.
+12. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
+13. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
+14. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+15. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -143,4 +146,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. El entorno está listo para descargar código. Siguiente paso: clonar únicamente el repositorio oficial `https://github.com/myshell-ai/OpenVoice.git` dentro de `~/yo-digital-voice-poc`; no instalar dependencias todavía.
+Guiar al propietario de uno en uno. El repositorio oficial ya está clonado en `~/yo-digital-voice-poc/OpenVoice`. Siguiente paso: entrar en esa carpeta con `cd OpenVoice`. No instalar dependencias todavía.
