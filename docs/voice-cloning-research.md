@@ -90,6 +90,7 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - En la comprobación inicial había ~1167 MiB de VRAM ocupada y ~2 % de uso de GPU; `nvidia-smi` no mostró procesos Linux en ejecución.
 - Python del sistema: 3.12.3.
 - `uv` 0.12.3 instalado para el usuario en `/home/xerach/.local/bin` mediante el instalador oficial y validado desde la shell actual.
+- Python aislado 3.9.25 instalado correctamente mediante `uv python install 3.9`.
 - CPU: pendiente, no bloquea la primera prueba.
 
 La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python y de `uv` confirma que el entorno de PoC es Windows 11 + Ubuntu 24.04.4 LTS sobre WSL2, con la GPU expuesta correctamente al entorno Linux. No se instalarán drivers NVIDIA dentro de WSL y no se sustituirá el Python 3.12 del sistema.
@@ -117,12 +118,13 @@ Estrategia de ejecución para GTX 1060 3GB:
 2. GPU/driver desde Ubuntu: validado con `nvidia-smi`.
 3. Distribución: Ubuntu 24.04.4 LTS (`noble`) confirmada.
 4. Python del sistema: 3.12.3; no se modificará.
-5. La guía oficial de OpenVoice crea un entorno con Python 3.9. Para reproducibilidad se usará Python 3.9 aislado del sistema.
-6. `uv` 0.12.3 está instalado y operativo; se usará para gestionar Python 3.9 de forma aislada.
-7. Usar una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
-8. Probar inferencia CUDA y medir VRAM real.
-9. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-10. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+5. Python aislado 3.9.25: instalado correctamente con `uv`.
+6. `uv` 0.12.3 está instalado y operativo.
+7. Crear un directorio de trabajo aislado para la PoC y, dentro de él, un entorno virtual basado en Python 3.9.25.
+8. Usar una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
+9. Probar inferencia CUDA y medir VRAM real.
+10. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+11. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -136,4 +138,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. Siguiente paso: instalar con `uv` una copia aislada de Python 3.9 (`uv python install 3.9`). No sustituir ni modificar el Python 3.12 del sistema.
+Guiar al propietario de uno en uno. Siguiente paso: crear el directorio local `~/yo-digital-voice-poc` para aislar todo el experimento. Después se creará dentro un entorno virtual con Python 3.9.25.
