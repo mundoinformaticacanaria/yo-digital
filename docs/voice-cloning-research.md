@@ -77,11 +77,12 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 
 ## Hardware confirmado
 
+- Sistema host: Windows 11.
+- Entorno Linux disponible: Ubuntu bajo WSL/WSL2 (confirmado visualmente desde el Explorador de archivos de Windows; versión exacta de WSL pendiente de comprobar).
 - RAM: 8 GB.
 - GPU: NVIDIA GeForce GTX 1060 3GB.
 - VRAM dedicada: 3 GB.
 - Arquitectura GPU: Pascal; compute capability 6.1.
-- Sistema Linux disponible: Ubuntu nativo.
 - CPU: pendiente, no bloquea la primera prueba.
 
 NVIDIA mantiene Pascal / compute capability 6.x dentro de CUDA 12.x, pero la arquitectura queda fuera de la línea futura posterior; para esta PoC se priorizará una versión de PyTorch/CUDA compatible con Pascal en lugar de instalar ciegamente la versión CUDA más reciente.
@@ -97,7 +98,7 @@ Razones técnicas:
 - Una GPU móvil Adreno no ofrece CUDA, por lo que no puede aprovechar directamente el camino de aceleración NVIDIA pensado por estos proyectos.
 - Portar los modelos a ONNX/ExecuTorch/NNAPI u otra pila móvil sería un proyecto adicional de optimización y compatibilidad, no una PoC rápida de calidad de voz.
 
-Conclusión: aunque el teléfono pudiera superar al PC en algunas métricas generales de CPU/RAM, el PC NVIDIA con Ubuntu sigue siendo la plataforma más útil para validar OpenVoice/Chatterbox debido al ecosistema Python/PyTorch/CUDA. El móvil se reconsiderará más adelante solo si queremos inferencia completamente local en Android.
+Conclusión: aunque el teléfono pudiera superar al PC en algunas métricas generales de CPU/RAM, el PC Windows 11 con Ubuntu bajo WSL sigue siendo la plataforma más útil para validar OpenVoice/Chatterbox debido al ecosistema Python/PyTorch/CUDA. El móvil se reconsiderará más adelante solo si queremos inferencia completamente local en Android.
 
 ## Decisión actual
 
@@ -105,12 +106,13 @@ Primera PoC: `OpenVoice V2`.
 
 Estrategia de ejecución para GTX 1060 3GB:
 
-1. Validar desde Ubuntu que la GPU y el driver NVIDIA son visibles con `nvidia-smi`.
-2. Usar Python 3.9, como recomienda la guía oficial de OpenVoice.
-3. Empezar con una combinación PyTorch/CUDA que conserve compatibilidad Pascal; CUDA 11.8 es la opción conservadora inicial.
-4. Probar inferencia CUDA y medir VRAM real.
-5. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-6. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+1. Confirmar que Ubuntu se ejecuta bajo WSL2 y que abre correctamente una terminal.
+2. Validar desde Ubuntu/WSL2 que la GPU y el driver NVIDIA son visibles con `nvidia-smi`.
+3. Usar Python 3.9, como recomienda la guía oficial de OpenVoice.
+4. Empezar con una combinación PyTorch/CUDA que conserve compatibilidad Pascal; CUDA 11.8 es la opción conservadora inicial.
+5. Probar inferencia CUDA y medir VRAM real.
+6. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+7. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -124,4 +126,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Comprobar desde Ubuntu que la GTX 1060 es visible mediante `nvidia-smi`. Si esa comprobación es correcta, preparar el entorno aislado de OpenVoice V2 y comenzar la PoC.
+Guiar al propietario de uno en uno. Primer paso: abrir la aplicación `Ubuntu` desde el menú Inicio de Windows. No instalar ni ejecutar más comandos hasta verificar que la terminal Ubuntu abre correctamente.
