@@ -88,9 +88,10 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - `nvidia-smi` visible y operativo dentro de Ubuntu.
 - `nvidia-smi` informa `CUDA Version: 13.0`; este valor indica la versión CUDA máxima soportada por el driver, no demuestra que exista un CUDA Toolkit 13.0 instalado dentro de Ubuntu.
 - En la comprobación inicial había ~1167 MiB de VRAM ocupada y ~2 % de uso de GPU; `nvidia-smi` no mostró procesos Linux en ejecución.
+- Python del sistema: 3.12.3.
 - CPU: pendiente, no bloquea la primera prueba.
 
-La validación de `nvidia-smi`, del kernel y de Ubuntu confirma que el entorno de PoC es Windows 11 + Ubuntu 24.04.4 LTS sobre WSL2, con la GPU expuesta correctamente al entorno Linux. No se instalarán drivers NVIDIA dentro de WSL.
+La validación de `nvidia-smi`, del kernel, de Ubuntu y de Python confirma que el entorno de PoC es Windows 11 + Ubuntu 24.04.4 LTS sobre WSL2, con la GPU expuesta correctamente al entorno Linux. No se instalarán drivers NVIDIA dentro de WSL y no se sustituirá el Python 3.12 del sistema.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -114,12 +115,13 @@ Estrategia de ejecución para GTX 1060 3GB:
 1. WSL2: validado por kernel `6.6.87.2-microsoft-standard-WSL2`.
 2. GPU/driver desde Ubuntu: validado con `nvidia-smi`.
 3. Distribución: Ubuntu 24.04.4 LTS (`noble`) confirmada.
-4. Comprobar la versión de Python disponible antes de instalar nada.
-5. La guía oficial de OpenVoice sigue recomendando crear un entorno `conda` con Python 3.9; el paquete declara `python_requires >=3.9`, pero sus dependencias fijadas son antiguas, por lo que se priorizará Python 3.9 para reproducibilidad.
-6. Usar un entorno aislado y una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
-7. Probar inferencia CUDA y medir VRAM real.
-8. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-9. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+4. Python del sistema: 3.12.3; no se modificará.
+5. La guía oficial de OpenVoice crea un entorno con Python 3.9. Para reproducibilidad se usará Python 3.9 aislado del sistema.
+6. Se comprobará primero si `uv` ya existe. Si no, se instalará `uv` y se usará para gestionar el Python 3.9 aislado, evitando reemplazar el Python de Ubuntu.
+7. Usar una combinación PyTorch/CUDA compatible con Pascal; CUDA 11.8 sigue siendo la opción conservadora inicial para la PoC.
+8. Probar inferencia CUDA y medir VRAM real.
+9. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+10. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -133,4 +135,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. Siguiente comprobación: ejecutar `python3 --version` dentro de Ubuntu para conocer la versión de Python preinstalada. No instalar nada todavía.
+Guiar al propietario de uno en uno. Siguiente comprobación: ejecutar `uv --version` dentro de Ubuntu para saber si ya existe un gestor capaz de instalar Python 3.9 de forma aislada. No instalar nada todavía.
