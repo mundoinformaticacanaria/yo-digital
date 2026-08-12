@@ -107,7 +107,9 @@ La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python, de `uv` y de G
 - Segundo intento: PyAV detectó que faltaban las librerías de desarrollo FFmpeg `avformat`, `avcodec`, `avdevice`, `avutil`, `avfilter`, `swscale` y `swresample`.
 - El primer intento de instalar esas librerías falló por índices APT obsoletos con varios errores 404; se corrigió con `sudo apt update`.
 - Librerías de desarrollo FFmpeg instaladas correctamente: `libavformat-dev`, `libavcodec-dev`, `libavdevice-dev`, `libavutil-dev`, `libavfilter-dev`, `libswscale-dev` y `libswresample-dev`.
-- Siguiente validación: repetir `uv pip install -e .` dentro del `.venv` activo y registrar el siguiente bloqueo, si aparece.
+- Tercer intento: PyAV 10.0.0 llega ya a Cython, pero falla en `av/logging.pyx` por incompatibilidad de firmas `except`/`noexcept` al compilar con Cython 3.
+- Causa confirmada en el código oficial de PyAV 10.0.0: su `pyproject.toml` declara `cython` sin fijar versión, por lo que un build aislado actual puede recibir Cython 3. El propio proyecto PyAV resolvió posteriormente el soporte de Cython 3 en PR #1145; durante esa corrección se validó explícitamente que Cython 0.29.36 compilaba el código anterior.
+- Estrategia conservadora: mantener primero las versiones que exige OpenVoice (`faster-whisper==0.9.0` y `av==10.0.0`), instalar Cython 0.29.36 en el `.venv` y construir PyAV sin aislamiento para evitar que el build vuelva a introducir Cython 3. No se actualizará `av`/`faster-whisper` hasta demostrar que esta ruta upstream-compatible no funciona.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -138,11 +140,12 @@ Estrategia de ejecución para GTX 1060 3GB:
 8. Git 2.43.0: disponible.
 9. Repositorio oficial `myshell-ai/OpenVoice`: clonado correctamente.
 10. Dependencias de sistema necesarias para compilar PyAV (`pkg-config` + librerías FFmpeg de desarrollo): instaladas.
-11. Repetir `uv pip install -e .` dentro del `.venv` y resolver únicamente el siguiente bloqueo real, si lo hubiera.
-12. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
-13. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
-14. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-15. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+11. Fijar Cython 0.29.36 dentro del `.venv` para compilar el PyAV 10.0.0 heredado por `faster-whisper==0.9.0`.
+12. Construir/instalar PyAV 10.0.0 sin aislamiento y, si funciona, reanudar `uv pip install -e .`.
+13. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
+14. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
+15. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+16. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -156,4 +159,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. Las dependencias de sistema detectadas por PyAV ya están instaladas. Siguiente paso: repetir `uv pip install -e .` dentro de `~/yo-digital-voice-poc/OpenVoice` con el `.venv` activo y evaluar el resultado antes de instalar nada más.
+Guiar al propietario de uno en uno. El siguiente paso es instalar Cython 0.29.36, `setuptools` y `wheel` dentro del `.venv` activo. Después se intentará instalar `av==10.0.0` con `--no-build-isolation`, para impedir que el build aislado vuelva a usar Cython 3.
