@@ -133,6 +133,24 @@ Repositorio oficial: https://github.com/fishaudio/fish-speech
 - La reinstalación de PyTorch alteró `networkx` y `markupsafe`; se restauraron `networkx==2.8.8` y `markupsafe==2.1.5`.
 - Setuptools quedó finalmente en `78.1.0`, compatible con el uso actual de `pkg_resources` por `librosa==0.9.1`.
 - `uv pip check` vuelve a mostrar una única incompatibilidad conocida e intencional: `myshell-openvoice` declara `faster-whisper==0.9.0`, mientras el entorno usa `1.0.0` para mantener PyAV 11/FFmpeg 6.1.
+- Tras cambiar Torch a CUDA 12.6, `torchaudio` seguía compilado para CUDA 12.8 y MeloTTS falló al importar. Se reinstaló `torchaudio==2.8.0` desde el índice oficial CUDA 12.6 para alinear ambos paquetes.
+
+## Pruebas reales de carga CUDA
+
+- `ToneColorConverter` de OpenVoice V2 cargado correctamente en `cuda:0` con `converter/checkpoint.pth`:
+  - memoria asignada tras carga: ~135.4 MB;
+  - reservada: ~280.0 MB;
+  - pico: ~262.5 MB.
+- MeloTTS español cargado correctamente en `cuda:0` y descargó su checkpoint (~208 MB):
+  - speaker disponible: `{'ES': 0}`;
+  - memoria asignada tras carga: ~200.8 MB;
+  - reservada: ~406.0 MB;
+  - pico: ~401.6 MB.
+- MeloTTS español + ToneColorConverter cargados simultáneamente en la GTX 1060:
+  - memoria asignada: ~336.2 MB;
+  - reservada: ~482.0 MB;
+  - pico de carga: ~463.3 MB.
+- Conclusión de esta fase: los 3 GB de VRAM no son un impedimento para mantener simultáneamente los dos modelos necesarios para el flujo OpenVoice V2. Queda por medir el pico durante inferencia real y conversión de voz.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -156,11 +174,11 @@ Estrategia actual:
 1. WSL2, Ubuntu, Python aislado y GPU: validados.
 2. OpenVoice, FFmpeg, MeloTTS y UniDic: instalados.
 3. Checkpoints V2 oficiales: descargados correctamente desde Hugging Face.
-4. PyTorch CUDA compatible con la GTX 1060: validado mediante ejecución real de tensor en GPU.
+4. PyTorch/TorchAudio CUDA 12.6 compatibles con la GTX 1060: validados mediante ejecución real y carga de modelos.
 5. Entorno Python: solo conserva el conflicto intencional de metadatos `faster-whisper 1.0.0` frente al pin `0.9.0` de OpenVoice.
-6. Siguiente prueba: cargar `ToneColorConverter` y su checkpoint en CUDA y medir si la GTX 1060 de 3 GB dispone de VRAM suficiente.
-7. Si aparece `CUDA out of memory`, repetir la carga en CPU antes de descartar OpenVoice.
-8. Después: generar una primera muestra española y compararla con el dataset privado local.
+6. OpenVoice y MeloTTS pueden coexistir en GPU con un pico de carga de ~463 MB, muy por debajo de los 3 GB disponibles.
+7. Siguiente prueba: generar audio español real con MeloTTS y medir pico/tiempo de inferencia.
+8. Después: extraer la embedding de una referencia privada y ejecutar la primera conversión de voz OpenVoice.
 9. No probar Chatterbox ni pagar ElevenLabs hasta tener esta línea base medida.
 
 ## Arquitectura de PoC
@@ -173,4 +191,4 @@ Estrategia actual:
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. El entorno está listo para la primera carga real del modelo: `ToneColorConverter` + checkpoint V2 sobre `cuda:0`, midiendo memoria reservada/asignada y detectando si los 3 GB de VRAM son suficientes.
+Guiar al propietario de uno en uno. La carga simultánea de MeloTTS español y OpenVoice V2 funciona en CUDA con amplio margen de VRAM. El siguiente paso es ejecutar una síntesis española real con MeloTTS, guardar el WAV base y medir tiempo y pico de VRAM antes de introducir el audio privado de referencia.
