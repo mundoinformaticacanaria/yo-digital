@@ -113,7 +113,10 @@ La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python, de `uv` y de G
 - La primera prueba de imports falló porque `librosa==0.9.1` usa `pkg_resources` y Setuptools 82 ya no lo aporta en este entorno.
 - Se bajó Setuptools a `81.0.0`. Con ello los imports reales de `openvoice.se_extractor`, `openvoice.api.ToneColorConverter`, `faster_whisper` y `av` completan correctamente y muestran `OpenVoice imports OK`.
 - Queda un aviso de deprecación de `pkg_resources` procedente de `librosa==0.9.1`; no bloquea la PoC actual. Antes de congelar un entorno reproducible se revisará si conviene fijar Setuptools `<81` o aplicar una solución más moderna.
-- La validación de imports también revela que `pydub` no encuentra el ejecutable `ffmpeg`. Las librerías de desarrollo están instaladas, pero falta confirmar/instalar el binario de línea de comandos que Pydub necesita para procesar audio.
+- El ejecutable `ffmpeg` 6.1.1 quedó instalado correctamente mediante APT; Pydub ya dispone del binario de sistema requerido.
+- MeloTTS se instaló correctamente desde el repositorio oficial `myshell-ai/MeloTTS`. Durante la resolución ajustó varias dependencias, entre ellas `networkx` 3.2.1 → 2.8.8, `rich` 15.0.0 → 13.9.4 y `urllib3` 2.6.3 → 1.26.20.
+- Tras instalar MeloTTS, `uv pip check` sigue mostrando únicamente la incompatibilidad intencional `faster-whisper 1.0.0` frente al pin `0.9.0` de OpenVoice; no aparecieron nuevos conflictos.
+- UniDic 3.1.0+2021-08-31 se descargó correctamente mediante `python -m unidic download` (~526 MB) y quedó instalado en el `.venv`.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -139,11 +142,13 @@ Estrategia actual:
 3. Dependencias Python necesarias: instaladas.
 4. `faster-whisper==1.0.0` + `av==11.0.0`: combinación operativa adoptada para Ubuntu 24.04/FFmpeg 6.1.
 5. Imports principales de OpenVoice: OK.
-6. Confirmar/instalar el ejecutable `ffmpeg` requerido por Pydub.
-7. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
-8. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
-9. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-10. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+6. Ejecutable `ffmpeg`: instalado.
+7. MeloTTS: instalado.
+8. UniDic: descargado correctamente.
+9. Comprobar espacio de disco disponible antes de descargar checkpoints V2.
+10. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
+11. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+12. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -157,4 +162,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. Los imports principales ya funcionan. El siguiente paso es instalar el ejecutable `ffmpeg` del sistema para eliminar el aviso de Pydub antes de continuar con MeloTTS.
+Guiar al propietario de uno en uno. MeloTTS y UniDic ya están listos y el entorno conserva solo el conflicto intencional de `faster-whisper`. El siguiente paso es comprobar el espacio libre disponible antes de descargar los checkpoints V2.
