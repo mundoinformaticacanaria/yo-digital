@@ -1,6 +1,6 @@
 # Investigación de clonación de voz local/gratuita
 
-Última actualización: 2026-08-12
+Última actualización: 2026-08-13
 
 ## Objetivo
 
@@ -102,15 +102,18 @@ La validación de `nvidia-smi`, del kernel, de Ubuntu, de Python, de `uv` y de G
 ## Estado de instalación de OpenVoice V2
 
 - Primer `uv pip install -e .`: falló compilando `av==10.0.0` porque faltaba `pkg-config`.
-- Cadena de dependencia original: `myshell-openvoice` → `faster-whisper==0.9.0` → `av>=10.dev0,<11.dev0`; el resolver selecciona `av==10.0.0`.
+- Cadena de dependencia original: `myshell-openvoice` → `faster-whisper==0.9.0` → `av>=10.dev0,<11.dev0`; el resolver seleccionaba `av==10.0.0`.
 - `pkg-config` y las librerías de desarrollo FFmpeg (`libavformat-dev`, `libavcodec-dev`, `libavdevice-dev`, `libavutil-dev`, `libavfilter-dev`, `libswscale-dev`, `libswresample-dev`) quedaron instaladas correctamente.
 - PyAV 10.0.0 falló primero con Cython 3; se fijó Cython 0.29.36 y se repitió sin aislamiento.
-- Con Cython 0.29.36, PyAV 10.0.0 avanzó hasta compilar contra FFmpeg 6.1, pero falló porque `AVFMT_FLAG_PRIV_OPT` ya no existe en esa versión de FFmpeg. Por tanto, PyAV 10 no es una combinación viable con el FFmpeg 6.1 del Ubuntu 24.04 actual sin parchear o degradar FFmpeg.
-- Se eligió la ruta menos invasiva para el sistema: mantener Ubuntu/FFmpeg actual y probar `faster-whisper==1.0.0`, que depende de `av==11.*`, en lugar de degradar FFmpeg del sistema.
-- `uv pip install "faster-whisper==1.0.0"` completó correctamente.
-- Estado confirmado tras esa instalación: `faster-whisper==1.0.0`, `av==11.0.0`, `ctranslate2==4.8.1`, `onnxruntime==1.19.2`, `tokenizers==0.13.3`, entre otras dependencias.
-- El `setup.py` oficial de OpenVoice sigue fijando `faster-whisper==0.9.0`, por lo que no se debe ejecutar de nuevo `uv pip install -e .` con resolución normal: volvería a intentar degradar `faster-whisper` y PyAV.
-- Próxima estrategia: instalar el paquete OpenVoice editable con `--no-deps`, conservando `faster-whisper==1.0.0`/`av==11.0.0`; después instalar manualmente las demás dependencias declaradas por OpenVoice y validar imports antes de continuar con MeloTTS.
+- Con Cython 0.29.36, PyAV 10.0.0 avanzó hasta compilar contra FFmpeg 6.1, pero falló porque `AVFMT_FLAG_PRIV_OPT` ya no existe. No se degradó FFmpeg del sistema.
+- Se adoptó `faster-whisper==1.0.0`, que instala `av==11.0.0` y es compatible con el FFmpeg 6.1 del Ubuntu 24.04 actual.
+- OpenVoice se instaló correctamente como paquete editable mediante `uv pip install -e . --no-deps`, evitando que su pin histórico fuerce de nuevo `faster-whisper==0.9.0`.
+- Se instalaron manualmente las restantes dependencias declaradas por OpenVoice: `librosa==0.9.1`, `pydub==0.25.1`, `wavmark==0.0.3`, `numpy==1.22.0`, `eng-to-ipa==0.0.2`, `inflect==7.0.0`, `unidecode==1.3.7`, `whisper-timestamped==1.14.2`, `pypinyin==0.50.0`, `cn2an==0.5.22`, `jieba==0.42.1`, `gradio==3.48.0` y `langid==1.1.6`.
+- `uv pip check` queda con una única incompatibilidad conocida e intencional: el metadato de `myshell-openvoice` pide `faster-whisper==0.9.0`, mientras el entorno usa `1.0.0` para mantener PyAV 11/FFmpeg 6.1.
+- La primera prueba de imports falló porque `librosa==0.9.1` usa `pkg_resources` y Setuptools 82 ya no lo aporta en este entorno.
+- Se bajó Setuptools a `81.0.0`. Con ello los imports reales de `openvoice.se_extractor`, `openvoice.api.ToneColorConverter`, `faster_whisper` y `av` completan correctamente y muestran `OpenVoice imports OK`.
+- Queda un aviso de deprecación de `pkg_resources` procedente de `librosa==0.9.1`; no bloquea la PoC actual. Antes de congelar un entorno reproducible se revisará si conviene fijar Setuptools `<81` o aplicar una solución más moderna.
+- La validación de imports también revela que `pydub` no encuentra el ejecutable `ffmpeg`. Las librerías de desarrollo están instaladas, pero falta confirmar/instalar el binario de línea de comandos que Pydub necesita para procesar audio.
 
 ## ¿Usar el teléfono como host de la PoC?
 
@@ -129,19 +132,18 @@ Conclusión: aunque el teléfono pudiera superar al PC en algunas métricas gene
 
 Primera PoC: `OpenVoice V2`.
 
-Estrategia de ejecución para GTX 1060 3GB:
+Estrategia actual:
 
 1. WSL2, GPU, Ubuntu y Python aislado: validados.
-2. OpenVoice clonado en `~/yo-digital-voice-poc/OpenVoice`.
-3. Dependencias de sistema para PyAV/FFmpeg: instaladas.
-4. PyAV 10 descartado en este Ubuntu por incompatibilidad con FFmpeg 6.1 (`AVFMT_FLAG_PRIV_OPT`).
-5. `faster-whisper==1.0.0` + `av==11.0.0`: instalados correctamente.
-6. Instalar OpenVoice editable con `--no-deps` para evitar que su pin histórico fuerce `faster-whisper==0.9.0`.
-7. Instalar manualmente el resto de dependencias de OpenVoice y validar imports.
-8. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
-9. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
-10. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
-11. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
+2. OpenVoice clonado e instalado como editable.
+3. Dependencias Python necesarias: instaladas.
+4. `faster-whisper==1.0.0` + `av==11.0.0`: combinación operativa adoptada para Ubuntu 24.04/FFmpeg 6.1.
+5. Imports principales de OpenVoice: OK.
+6. Confirmar/instalar el ejecutable `ffmpeg` requerido por Pydub.
+7. Instalar MeloTTS y descargar UniDic para V2, según la guía oficial.
+8. Descargar checkpoints V2 y probar inferencia CUDA midiendo VRAM real.
+9. Si aparece `CUDA out of memory`, repetir el mismo flujo en CPU antes de descartar OpenVoice.
+10. No probar Chatterbox en GPU hasta tener una línea base funcional y mediciones reales.
 
 No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVoice.
 
@@ -155,4 +157,4 @@ No se paga ElevenLabs antes de medir calidad, similitud y rendimiento con OpenVo
 
 ## Próximo paso operativo
 
-Guiar al propietario de uno en uno. Siguiente paso: desde `~/yo-digital-voice-poc/OpenVoice` con el `.venv` activo, ejecutar `uv pip install -e . --no-deps`. No volver a usar la resolución normal de dependencias mientras OpenVoice siga fijando `faster-whisper==0.9.0`.
+Guiar al propietario de uno en uno. Los imports principales ya funcionan. El siguiente paso es instalar el ejecutable `ffmpeg` del sistema para eliminar el aviso de Pydub antes de continuar con MeloTTS.
