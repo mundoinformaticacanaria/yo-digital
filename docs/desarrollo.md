@@ -4,6 +4,12 @@
 
 Este documento es el punto de entrada operativo para una persona que vaya a programar en Yo-digital. Debe permitir comenzar a trabajar con el contexto esencial sin depender de conversaciones externas.
 
+## Ejecutor actual
+
+Hasta que se incorpore un desarrollador dedicado, el Tech Lead ejecuta temporalmente también las issues de Desarrollo / Programador.
+
+El proceso no cambia por esta acumulación temporal de funciones: toda tarea de desarrollo debe existir previamente como issue y llevar la etiqueta `PROGRAMADOR`. Cuando entre un desarrollador, asumirá estas issues sin necesidad de redefinir la gobernanza ni el contrato de ejecución.
+
 ## Antes de tocar código
 
 1. Lee `README.md`.
