@@ -1,6 +1,6 @@
 # Estado de reconstrucción
 
-Última actualización: 2026-08-11
+Última actualización: 2026-08-14
 
 ## Completado
 
@@ -25,6 +25,8 @@
 - Dataset privado externo v1 preparado con 43 clips y ~6,19 min de voz útil.
 - Subconjunto privado IVC v1 preparado con 14 clips y ~1,90 min para una primera prueba de clonación instantánea.
 - Evaluación inicial de proveedores documentada en `docs/adr/004-voice-cloning-provider-evaluation.md`.
+- Punto de extensión de avatar independiente de proveedor mediante `AvatarController`, con estados `idle`, `listening`, `thinking` y `speaking`.
+- Renderer DOM inicial del avatar conectado al flujo real de reconocimiento y síntesis de voz en la preview.
 
 ## Incidencias de validación
 
@@ -77,10 +79,11 @@ Preview técnica de la reconstrucción:
 5. Recuperar/preservar detalles visuales y de contenido que aporten valor frente a la nueva UI simplificada.
 6. Endurecer CI y documentar operación de despliegue.
 7. Definir el mecanismo final de generación del artefacto desplegable.
-8. Crear una primera voz clonada cuando el cliente autorice el proveedor y el envío del audio.
-9. Diseñar proxy/tokenización para TTS dinámico sin exponer claves en GitHub Pages.
-10. Sustituir el bundle heredado solo tras validación funcional suficiente.
+8. Evolucionar el renderer de avatar hacia presencia fotorrealista y validar una PoC de lip-sync dinámico sin acoplar la aplicación al motor elegido.
+9. Crear una primera voz clonada cuando el cliente autorice el proveedor y el envío del audio, si sigue siendo necesario frente a alternativas locales.
+10. Diseñar proxy/tokenización para cualquier TTS dinámico externo sin exponer claves en GitHub Pages.
+11. Sustituir el bundle heredado solo tras validación funcional suficiente.
 
 ## Decisiones pendientes del cliente
 
-- Autorizar o rechazar el uso de un proveedor externo para crear la primera voz clonada, aceptando el envío de muestras biométricas y el coste/retención aplicables.
+- Autorizar o rechazar el uso de un proveedor externo para crear la primera voz clonada, aceptando el envío de muestras biométricas y el coste/retención aplicables, si se opta por una solución externa.
