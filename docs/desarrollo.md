@@ -68,6 +68,19 @@ No edites el bundle heredado como mecanismo ordinario para desarrollar nuevas fu
 
 Regla de dependencia: el dominio y los casos de uso no deben quedar acoplados a APIs concretas del navegador. Los detalles externos se aíslan en adaptadores.
 
+## Avatar y presencia visual
+
+El flujo conversacional no debe depender de MuseTalk, HeyGen ni de ningún proveedor concreto.
+
+- `src/application/avatar-controller.js` mantiene los estados `idle`, `listening`, `thinking` y `speaking`.
+- El renderer de avatar implementa `render({ state, previousState, context })`.
+- `src/ui/dom-avatar-renderer.js` es la implementación visual inicial para la preview.
+- `src/main.js` coordina los estados con reconocimiento y síntesis de voz.
+
+Si se incorpora un nuevo motor de avatar, debe adaptarse detrás de este punto de extensión. No introduzcas llamadas específicas de proveedor dentro de `ConsultationController`, `AppView` o lógica de dominio.
+
+El contexto de `speaking` está preparado para evolucionar y transportar datos necesarios por futuros motores (por ejemplo una referencia de audio), sin que el resto de la aplicación conozca cómo se genera el vídeo.
+
 ## Stack y comandos
 
 Requisito: Node.js >= 20.
