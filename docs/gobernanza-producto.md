@@ -32,7 +32,7 @@ Puede decidir autónomamente detalles de implementación, refactorización, estr
 
 ### Desarrollo / Programador
 
-Ejecuta las issues preparadas para desarrollo. Toda issue que deba ejecutar un programador debe llevar la etiqueta `PROGRAMADOR`.
+Ejecuta las issues preparadas para desarrollo. Toda issue cuya siguiente actuación corresponda a Desarrollo debe llevar la etiqueta `PROGRAMADOR`.
 
 Su contrato operativo está definido en `docs/desarrollo.md`.
 
@@ -55,9 +55,9 @@ Conserva su conocimiento histórico del proyecto, pero las nuevas decisiones de 
 
 Hasta que se incorpore un desarrollador dedicado, el Tech Lead asume también temporalmente la ejecución de las issues de Desarrollo / Programador.
 
-La acumulación es únicamente de persona ejecutora, no de proceso ni de responsabilidades. El Tech Lead debe seguir diferenciando cuándo actúa como responsable técnico y cuándo actúa como ejecutor. Toda issue de desarrollo seguirá llevando la etiqueta `PROGRAMADOR`, aunque la implemente temporalmente el Tech Lead.
+La acumulación es únicamente de persona ejecutora, no de proceso ni de responsabilidades. El Tech Lead debe seguir diferenciando cuándo actúa como responsable técnico y cuándo actúa como ejecutor. Toda issue de desarrollo seguirá llevando la etiqueta `PROGRAMADOR` cuando el turno activo corresponda a ese rol, aunque la implemente temporalmente el Tech Lead.
 
-Las issues pueden ejecutarse también desde el rol de Desarrollo / Integración local cuando requieran interacción con el entorno WSL2 o cuando sea el ejecutor más adecuado. La etiqueta `PROGRAMADOR` identifica el tipo de trabajo, no un chat o persona concreta.
+Las issues pueden ejecutarse también desde el rol de Desarrollo / Integración local cuando requieran interacción con el entorno WSL2 o cuando sea el ejecutor más adecuado. Las labels identifican el rol que debe actuar, no un chat o persona concreta.
 
 Cuando se incorpore un desarrollador, asumirá la ejecución de dichas issues sin necesidad de modificar el flujo de trabajo establecido.
 
@@ -67,15 +67,32 @@ Todo trabajo sobre el repositorio debe estar previamente identificado mediante u
 
 No se inicia implementación, refactorización, corrección o cambio documental relevante sin trazabilidad previa. Si durante una tarea aparece trabajo adicional fuera de alcance, se registra en otra issue en vez de incorporarlo silenciosamente.
 
+## Labels de turno y responsabilidad
+
+Las labels de rol expresan **quién tiene la siguiente actuación pendiente**:
+
+- `PROGRAMADOR`: debe actuar Desarrollo / Integración local o quien ejerza el rol de Programador.
+- `TECH LEAD`: existe una actuación inmediata pendiente del Tech Lead.
+- sin label de rol: la issue abierta continúa bajo supervisión del Tech Lead, pero no tiene un turno inmediato delegado; puede estar en backlog, pendiente de prioridad o esperando una dependencia.
+
+Las issues abiertas sin label de rol no están huérfanas. El Tech Lead es responsable de revisar periódicamente ese backlog y activar el siguiente turno cuando corresponda.
+
+Cuando Desarrollo termina una ejecución o necesita una decisión, registra el resultado en comentarios y cambia `PROGRAMADOR` por `TECH LEAD`. Cuando el Tech Lead devuelve trabajo a Desarrollo, cambia `TECH LEAD` por `PROGRAMADOR`.
+
+Si una issue queda esperando otra, la dependencia debe constar explícitamente (`Bloqueada por #N`). Al cambiar el estado de la dependencia, el Tech Lead revisa las issues dependientes y asigna el siguiente turno.
+
+Las issues cerradas no deben conservar `PROGRAMADOR` ni `TECH LEAD`, porque ambas labels significan trabajo pendiente.
+
 Flujo general:
 
 1. identificar el trabajo mediante issue;
-2. definir alcance y criterios de aceptación;
-3. etiquetar `PROGRAMADOR` si corresponde a ejecución de Desarrollo;
-4. implementar y verificar;
-5. revisar técnicamente;
-6. actualizar documentación/ADR cuando corresponda;
-7. cerrar la issue con el resultado trazable.
+2. definir alcance, criterios de aceptación y dependencias;
+3. asignar la label del rol que debe actuar a continuación;
+4. ejecutar y registrar resultados en la issue;
+5. traspasar la label al siguiente rol cuando cambie el turno;
+6. revisar técnicamente;
+7. actualizar documentación/ADR cuando corresponda;
+8. retirar labels de turno y cerrar la issue cuando esté completada.
 
 ## Comunicación entre agentes
 
@@ -85,6 +102,7 @@ Principios:
 
 - GitHub es el canal formal de comunicación y la fuente de verdad.
 - La issue es el contrato de trabajo y el hilo principal para resultados, preguntas, bloqueos y hallazgos.
+- Las labels de rol indican quién debe actuar a continuación.
 - Los PR contienen los cambios revisables; CI y pruebas aportan la evidencia de validación.
 - La memoria de ChatGPT Projects puede aportar contexto de otras conversaciones del mismo proyecto, pero no sustituye GitHub ni constituye mensajería directa entre chats.
 - El propietario no debe copiar manualmente información entre chats salvo cuando una prueba local interactiva lo haga necesario.
