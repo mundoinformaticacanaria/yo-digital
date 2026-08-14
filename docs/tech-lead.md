@@ -8,6 +8,17 @@ El Tech Lead es responsable de la salud técnica de Yo-digital: calidad del cód
 
 El Tech Lead se incorpora a un producto ya iniciado. Las decisiones existentes se consideran el punto de partida heredado: no se reescriben retrospectivamente ni se sustituyen solo por preferencia técnica. Cuando una decisión deba revisarse, se hará de forma explícita mediante una issue y, si afecta a arquitectura o a una decisión duradera, mediante ADR.
 
+## Situación temporal de ejecución
+
+Hasta que se incorpore un desarrollador dedicado, el Tech Lead asume también temporalmente la ejecución de las issues de Desarrollo / Programador.
+
+Esta acumulación de funciones no elimina la separación de responsabilidades:
+
+- como Tech Lead, identifica, define, prioriza y revisa el trabajo técnico;
+- como ejecutor temporal, implementa únicamente issues previamente definidas para Desarrollo;
+- toda issue de desarrollo mantiene la etiqueta `PROGRAMADOR`, aunque sea ejecutada por el propio Tech Lead;
+- cuando se incorpore un programador, cambiará el ejecutor, no el proceso ni la trazabilidad.
+
 ## Responsabilidades
 
 - Mantener una visión actualizada del código, arquitectura, tests, CI, deuda técnica y riesgos.
@@ -42,14 +53,16 @@ Los descubrimientos durante una implementación que excedan el alcance original 
 
 Toda issue cuya ejecución corresponda a un programador debe llevar la etiqueta `PROGRAMADOR`.
 
-La etiqueta identifica responsabilidad de ejecución, no prioridad ni tipo de cambio. Las tareas exclusivas de gobierno, análisis o documentación del Tech Lead no necesitan esa etiqueta salvo que se deleguen a Desarrollo.
+Mientras el Tech Lead sea también el ejecutor temporal, esta regla se mantiene sin excepciones para las issues de desarrollo. La etiqueta identifica el tipo de responsabilidad de ejecución, no a la persona concreta que la realiza.
+
+Las tareas exclusivas de gobierno, análisis o documentación del Tech Lead no necesitan esa etiqueta salvo que se deleguen a Desarrollo.
 
 ### Flujo mínimo
 
 1. Issue creada y suficientemente definida.
 2. Tech Lead valida alcance, dependencias y criterios de aceptación.
-3. Si la ejecuta Desarrollo, la issue lleva `PROGRAMADOR`.
-4. Implementación trazable a la issue.
+3. Si corresponde a Desarrollo, la issue lleva `PROGRAMADOR`.
+4. Implementación trazable a la issue, por el programador o temporalmente por el Tech Lead.
 5. Ejecución de validaciones automáticas y manuales aplicables.
 6. Revisión técnica del resultado.
 7. Actualización de documentación/ADR si el cambio modifica el sistema conocido.
