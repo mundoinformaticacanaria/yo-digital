@@ -2,29 +2,65 @@
 
 Última actualización: 2026-08-14
 
-Este documento es el punto de entrada operativo para una persona que vaya a programar en Yo-digital. Debe permitir comenzar a trabajar con el contexto esencial sin depender de conversaciones externas.
+Este documento es el punto de entrada operativo para una persona o agente que vaya a programar en Yo-digital. Debe permitir comenzar a trabajar con el contexto esencial sin depender de conversaciones externas.
 
 ## Ejecutor actual
 
-Hasta que se incorpore un desarrollador dedicado, el Tech Lead ejecuta temporalmente también las issues de Desarrollo / Programador.
+Hasta que se incorpore un desarrollador dedicado, el Tech Lead ejecuta temporalmente también issues de Desarrollo / Programador.
 
-El proceso no cambia por esta acumulación temporal de funciones: toda tarea de desarrollo debe existir previamente como issue y llevar la etiqueta `PROGRAMADOR`. Cuando entre un desarrollador, asumirá estas issues sin necesidad de redefinir la gobernanza ni el contrato de ejecución.
+Además existe un rol de **Desarrollo / Integración local**, cubierto actualmente por el chat técnico histórico del proyecto. Este rol concentra especialmente las tareas que requieren interacción con Windows/WSL2, pruebas de navegador, GPU, modelos locales y PoC técnicas.
+
+El proceso no cambia según quién ejecute: toda tarea de desarrollo debe existir previamente como issue y llevar la etiqueta `PROGRAMADOR`.
+
+## Comunicación con el Tech Lead
+
+El protocolo completo está definido en `docs/comunicacion-agentes.md`.
+
+GitHub es el canal formal entre Desarrollo y Tech Lead. La memoria del Proyecto de ChatGPT puede aportar contexto, pero no sustituye la issue ni garantiza una comunicación directa entre chats.
+
+Para cada tarea:
+
+1. lee la issue asignada completa;
+2. confirma la etiqueta `PROGRAMADOR`;
+3. trabaja dentro del alcance;
+4. registra resultados, pruebas, métricas, bloqueos y hallazgos en la propia issue;
+5. no dependas de que el propietario copie la conversación al Tech Lead;
+6. si aparece trabajo nuevo fuera de alcance, descríbelo y espera una decisión o nueva issue antes de implementarlo.
+
+Cuando una tarea se ejecute de forma interactiva con el propietario en WSL2, el chat puede guiar comandos paso a paso. El resultado técnico relevante debe terminar registrado en GitHub.
 
 ## Antes de tocar código
 
 1. Lee `README.md`.
 2. Lee `docs/contexto-proyecto.md`.
 3. Lee `docs/tech-lead.md`.
-4. Revisa `docs/arquitectura-as-is.md`, `docs/arquitectura-to-be.md`, `docs/requisitos.md` y `docs/reglas-negocio.md` según el área que vayas a modificar.
-5. Lee la issue asignada completa.
-6. Confirma que la issue lleva la etiqueta `PROGRAMADOR`.
-7. No amplíes el alcance de la issue de forma silenciosa. Si descubres trabajo adicional, comunícalo al Tech Lead para crear o ajustar la trazabilidad correspondiente.
+4. Lee `docs/comunicacion-agentes.md`.
+5. Revisa `docs/arquitectura-as-is.md`, `docs/arquitectura-to-be.md`, `docs/requisitos.md` y `docs/reglas-negocio.md` según el área que vayas a modificar.
+6. Lee la issue asignada completa.
+7. Confirma que la issue lleva la etiqueta `PROGRAMADOR`.
+8. No amplíes el alcance de la issue de forma silenciosa. Si descubres trabajo adicional, regístralo en la issue para que el Tech Lead decida su trazabilidad.
 
 ## Regla principal de ejecución
 
 No se desarrolla nada que no esté previamente identificado mediante una issue.
 
 Una issue `PROGRAMADOR` es el contrato de trabajo del cambio: objetivo, alcance, criterios de aceptación y validaciones esperadas. El código, tests y documentación que se modifiquen deben poder relacionarse con ella.
+
+## Formato mínimo de entrega
+
+Al completar una ejecución o alcanzar un bloqueo relevante, deja un comentario en la issue que incluya, cuando aplique:
+
+- estado: completado, parcial o bloqueado;
+- rama/commit/PR;
+- comandos y tests ejecutados;
+- resultado de las validaciones;
+- entorno/hardware/navegador usado;
+- métricas obtenidas;
+- hallazgos;
+- trabajo fuera de alcance detectado;
+- decisiones que necesita tomar el Tech Lead.
+
+No publiques secretos, audios privados, retratos, embeddings ni material biométrico en GitHub.
 
 ## Producto y restricciones
 
@@ -154,7 +190,7 @@ Las PoC de motores de clonación son una línea experimental separada. OpenVoice
 - Añade o actualiza tests cuando cambies reglas, casos de uso o adaptadores sensibles.
 - No añadas dependencias por comodidad si la plataforma nativa resuelve el problema de forma suficiente.
 - No hagas refactorizaciones oportunistas amplias dentro de una issue pequeña.
-- Si detectas deuda técnica relevante, informa al Tech Lead para que quede registrada como issue.
+- Si detectas deuda técnica relevante, regístrala para que el Tech Lead decida si abre una issue.
 - Si una decisión cambia arquitectura o establece un precedente duradero, debe documentarse mediante ADR.
 
 ## Finalización de una issue
@@ -166,7 +202,7 @@ Antes de entregar:
 3. realiza las validaciones manuales específicas de la issue;
 4. revisa que no se hayan incluido secretos, datasets o artefactos privados;
 5. actualiza documentación si el cambio modifica el sistema conocido;
-6. informa de cualquier riesgo, limitación o trabajo descubierto que quede fuera de alcance.
+6. registra en la issue riesgos, limitaciones y trabajo descubierto fuera de alcance.
 
 Una tarea no está terminada únicamente porque compile o pase tests: debe satisfacer la issue y dejar el repositorio en un estado comprensible para la siguiente persona.
 
@@ -178,6 +214,7 @@ No sustituyas `index.html` ni promociones la reconstrucción a producción salvo
 
 ## Dónde buscar contexto
 
+- Comunicación entre agentes: `docs/comunicacion-agentes.md`.
 - Estado de reconstrucción: `docs/estado-reconstruccion.md`.
 - Roadmap: `docs/roadmap.md`.
 - Decisiones: `docs/decisiones/` y `docs/adr/`.
@@ -185,4 +222,4 @@ No sustituyas `index.html` ni promociones la reconstrucción a producción salvo
 - Experimentos de voz: documentación `docs/*voice*` y ADR relacionados.
 - Experimento de avatar/lip-sync: `docs/musetalk-poc.md`.
 
-Ante una contradicción entre documentación y código, no elijas silenciosamente una versión: comunícalo al Tech Lead y trátalo como una discrepancia que debe quedar trazada.
+Ante una contradicción entre documentación y código, no elijas silenciosamente una versión: regístrala para que el Tech Lead determine la corrección y trazabilidad.
