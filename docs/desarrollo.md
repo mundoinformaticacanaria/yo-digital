@@ -10,7 +10,7 @@ Hasta que se incorpore un desarrollador dedicado, el Tech Lead ejecuta temporalm
 
 Además existe un rol de **Desarrollo / Integración local**, cubierto actualmente por el chat técnico histórico del proyecto. Este rol concentra especialmente las tareas que requieren interacción con Windows/WSL2, pruebas de navegador, GPU, modelos locales y PoC técnicas.
 
-El proceso no cambia según quién ejecute: toda tarea de desarrollo debe existir previamente como issue y llevar la etiqueta `PROGRAMADOR`.
+El proceso no cambia según quién ejecute: toda tarea cuyo turno corresponda a Desarrollo debe existir previamente como issue y llevar la etiqueta `PROGRAMADOR`.
 
 ## Comunicación con el Tech Lead
 
@@ -20,14 +20,47 @@ GitHub es el canal formal entre Desarrollo y Tech Lead. La memoria del Proyecto 
 
 Para cada tarea:
 
-1. lee la issue asignada completa;
-2. confirma la etiqueta `PROGRAMADOR`;
+1. revisa las issues abiertas con `PROGRAMADOR`;
+2. lee la issue asignada completa;
 3. trabaja dentro del alcance;
 4. registra resultados, pruebas, métricas, bloqueos y hallazgos en la propia issue;
 5. no dependas de que el propietario copie la conversación al Tech Lead;
 6. si aparece trabajo nuevo fuera de alcance, descríbelo y espera una decisión o nueva issue antes de implementarlo.
 
 Cuando una tarea se ejecute de forma interactiva con el propietario en WSL2, el chat puede guiar comandos paso a paso. El resultado técnico relevante debe terminar registrado en GitHub.
+
+## Labels y traspaso de turno
+
+Las labels de rol indican quién debe actuar a continuación.
+
+### Mientras exista `PROGRAMADOR`
+
+La issue está en la cola activa de Desarrollo. Desarrollo puede avanzar dentro del alcance y criterios definidos.
+
+### Cuando Desarrollo termina o necesita decisión
+
+Si el trabajo está completado, queda bloqueado, necesita revisión o requiere una decisión del Tech Lead:
+
+1. deja un comentario de entrega con toda la información relevante;
+2. retira `PROGRAMADOR`;
+3. asigna `TECH LEAD`;
+4. detén el trabajo que dependa de esa revisión o decisión.
+
+Desarrollo no debe cerrar una issue simplemente porque haya terminado su parte técnica, salvo que la issue autorice expresamente otro procedimiento. El cierre ordinario corresponde al Tech Lead tras revisión.
+
+### Si el Tech Lead devuelve la issue
+
+Cuando el Tech Lead retire `TECH LEAD` y vuelva a asignar `PROGRAMADOR`, Desarrollo debe leer primero los nuevos comentarios/decisiones antes de continuar.
+
+### Issues sin label de rol
+
+Una issue abierta sin `PROGRAMADOR` ni `TECH LEAD` no forma parte de la cola activa de Desarrollo. Permanece bajo supervisión del Tech Lead y puede estar en backlog, pendiente de prioridad o esperando una dependencia.
+
+No debe tomarse por iniciativa propia salvo que el Tech Lead asigne `PROGRAMADOR`.
+
+### Dependencias
+
+Si detectas que no puedes continuar porque dependes de otra issue o condición, deja la dependencia explícita en comentarios (`Bloqueada por #N`) y traspasa a `TECH LEAD` si requiere actuación o decisión del Tech Lead.
 
 ## Antes de tocar código
 
@@ -59,6 +92,8 @@ Al completar una ejecución o alcanzar un bloqueo relevante, deja un comentario 
 - hallazgos;
 - trabajo fuera de alcance detectado;
 - decisiones que necesita tomar el Tech Lead.
+
+Después realiza el traspaso `PROGRAMADOR` → `TECH LEAD` cuando la siguiente actuación corresponda al Tech Lead.
 
 No publiques secretos, audios privados, retratos, embeddings ni material biométrico en GitHub.
 
@@ -202,9 +237,11 @@ Antes de entregar:
 3. realiza las validaciones manuales específicas de la issue;
 4. revisa que no se hayan incluido secretos, datasets o artefactos privados;
 5. actualiza documentación si el cambio modifica el sistema conocido;
-6. registra en la issue riesgos, limitaciones y trabajo descubierto fuera de alcance.
+6. registra en la issue riesgos, limitaciones y trabajo descubierto fuera de alcance;
+7. deja el comentario de entrega;
+8. cambia `PROGRAMADOR` por `TECH LEAD`.
 
-Una tarea no está terminada únicamente porque compile o pase tests: debe satisfacer la issue y dejar el repositorio en un estado comprensible para la siguiente persona.
+Una tarea de Desarrollo no está terminada únicamente porque compile o pase tests: debe satisfacer la issue, dejar evidencia suficiente y devolver formalmente el turno al Tech Lead.
 
 ## Producción y despliegue
 
