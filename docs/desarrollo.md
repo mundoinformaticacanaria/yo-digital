@@ -81,6 +81,29 @@ Si se incorpora un nuevo motor de avatar, debe adaptarse detrás de este punto d
 
 El contexto de `speaking` está preparado para evolucionar y transportar datos necesarios por futuros motores (por ejemplo una referencia de audio), sin que el resto de la aplicación conozca cómo se genera el vídeo.
 
+### PoC MuseTalk
+
+La primera evaluación de lip-sync fotorrealista sin coste recurrente está documentada en `docs/musetalk-poc.md` y corresponde a la issue #7.
+
+Reglas durante la PoC:
+
+- MuseTalk se instala en un workspace/entorno Python independiente del repositorio y de OpenVoice.
+- No se añade MuseTalk como dependencia de runtime de Yo-digital hasta demostrar su viabilidad.
+- Retratos, vídeos, WAV, frames, embeddings, cachés de avatar y resultados permanecen fuera de GitHub.
+- Las métricas y conclusiones sí se documentan en GitHub.
+
+### Audio necesario para lip-sync
+
+El sintetizador actual basado en Web Speech API reproduce voz, pero no proporciona a la aplicación un fichero o stream de audio reutilizable.
+
+Un motor como MuseTalk necesita audio como entrada. Por eso una integración real deberá respetar una secuencia equivalente a:
+
+```text
+texto → TTS que devuelve audio → motor de avatar → reproducción
+```
+
+No intentes resolver esta limitación acoplando MuseTalk a `ConsultationController`. Cuando la PoC visual sea viable, la capacidad de TTS que expone audio deberá tratarse mediante su propia issue y adaptador.
+
 ## Stack y comandos
 
 Requisito: Node.js >= 20.
@@ -160,5 +183,6 @@ No sustituyas `index.html` ni promociones la reconstrucción a producción salvo
 - Decisiones: `docs/decisiones/` y `docs/adr/`.
 - Incidencias técnicas documentadas: `docs/incidencias/`.
 - Experimentos de voz: documentación `docs/*voice*` y ADR relacionados.
+- Experimento de avatar/lip-sync: `docs/musetalk-poc.md`.
 
 Ante una contradicción entre documentación y código, no elijas silenciosamente una versión: comunícalo al Tech Lead y trátalo como una discrepancia que debe quedar trazada.

@@ -91,27 +91,35 @@ Debe coordinar o escalar cuando el cambio implique:
 - Arquitectura actual: `domain` → `application` → adaptadores `infrastructure` y presentación `ui`; `src/main.js` compone dependencias.
 - Runtime de desarrollo: Node.js >= 20, ES modules.
 - Verificación local: `npm run verify` (`npm run check && npm test`).
-- Tests actuales: `node:test` sobre dominio, sesión, controladores, voz, dataset y waveform.
+- Tests actuales: `node:test` sobre dominio, sesión, controladores, voz, dataset, waveform y estados de avatar.
+- El avatar está desacoplado mediante `AvatarController`, con estados `idle`, `listening`, `thinking` y `speaking`, y renderer intercambiable.
+- La preview utiliza actualmente `DomAvatarRenderer`; motores futuros no deben acoplarse al flujo de consulta.
 - No existe backend de producto ni tracking autorizado.
 - Las respuestas de consultoría no se persisten en servidor.
 - Las muestras de entrenamiento de voz se almacenan localmente en IndexedDB y pueden exportarse.
 - El material biométrico/dataset privado no debe entrar en GitHub.
-- La PoC local de OpenVoice V2 funciona técnicamente pero no alcanza todavía la naturalidad deseada; es una línea de experimentación separada de la aplicación publicada.
+- La PoC local de OpenVoice V2 funciona técnicamente pero no alcanza todavía la naturalidad deseada; la mejora de voz continúa en paralelo.
+- La issue #7 valida MuseTalk 1.5 como primera línea de lip-sync fotorrealista con coste recurrente 0 €, sin integración en producción.
 
-## Prioridades técnicas conocidas
+## Prioridades técnicas actuales
 
-Antes de sustituir producción, el estado documentado exige todavía:
+El orden vigente responde a que Yo-digital es actualmente un proyecto personal de exploración tecnológica; la captación comercial no condiciona el desarrollo inmediato.
 
-1. revalidar los flujos de voz en navegador real;
-2. validar persistencia IndexedDB y exportación;
-3. corregir incompatibilidades restantes;
-4. reintegrar waveform cuando la grabación base esté validada;
-5. preservar detalles visuales/funcionales valiosos del legado;
-6. endurecer CI y operación de despliegue;
-7. definir un build reproducible para el artefacto publicado;
-8. integrar cualquier evolución de voz clonada solo tras decisión de producto/arquitectura y tratamiento adecuado de secretos/datos.
+1. Mantener el avatar como capacidad intercambiable y escalable; la abstracción inicial ya está implementada.
+2. Validar una PoC de avatar fotorrealista/lip-sync sin coste recurrente, empezando por MuseTalk 1.5 y midiendo específicamente la GTX 1060 3 GB.
+3. Mejorar la presencia visual del avatar —reposo, escucha, pensamiento y habla— antes de priorizar persistencia comercial.
+4. Continuar la mejora de voz en paralelo y hacer que el avatar consuma la mejor voz disponible en cada momento, sin casarse con un proveedor.
+5. Revalidar los flujos de navegador sensibles: voz, IndexedDB, exportación y waveform.
+6. Endurecer CI, build reproducible y operación de despliegue antes de sustituir el `index.html` heredado.
+7. Abordar persistencia/captación cuando pase a ser una prioridad de producto; el código debe estar preparado para añadirla sin reestructuración masiva.
 
 Estas prioridades no autorizan trabajo por sí solas: cada intervención debe disponer de su issue correspondiente.
+
+## Restricción arquitectónica de voz + avatar
+
+El TTS actual basado en Web Speech API reproduce audio pero no entrega a la aplicación un WAV/PCM/stream reutilizable. Los motores de lip-sync como MuseTalk necesitan el audio como dato de entrada.
+
+Por tanto, la futura integración de avatar dinámico requerirá una implementación de TTS que pueda devolver o transmitir audio, aunque la UI y `AvatarController` permanezcan independientes de esa decisión. La PoC #7 utiliza un WAV preparado fuera del repositorio para validar primero el motor visual.
 
 ## Documentación que debe vigilar el Tech Lead
 
@@ -125,6 +133,7 @@ Estas prioridades no autorizan trabajo por sí solas: cada intervención debe di
 - `docs/estado-reconstruccion.md`: estado real de la transición.
 - `docs/gobernanza-producto.md`: reparto de responsabilidades.
 - `docs/desarrollo.md`: onboarding y contrato operativo del programador.
+- `docs/musetalk-poc.md`: ejecución y resultados de la PoC de avatar/lip-sync local.
 - `docs/decisiones/` y `docs/adr/`: decisiones técnicas y evaluaciones versionadas.
 
 Si uno de estos documentos contradice el código o el estado real, el Tech Lead debe abrir o utilizar una issue para corregir la discrepancia.
