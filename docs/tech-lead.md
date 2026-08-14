@@ -16,7 +16,7 @@ Esta acumulación de funciones no elimina la separación de responsabilidades:
 
 - como Tech Lead, identifica, define, prioriza y revisa el trabajo técnico;
 - como ejecutor temporal, implementa únicamente issues previamente definidas para Desarrollo;
-- toda issue de desarrollo mantiene la etiqueta `PROGRAMADOR`, aunque sea ejecutada por el propio Tech Lead;
+- toda issue cuyo turno corresponda a Desarrollo mantiene la etiqueta `PROGRAMADOR`, aunque sea ejecutada por el propio Tech Lead;
 - cuando se incorpore un programador, cambiará el ejecutor, no el proceso ni la trazabilidad.
 
 El proyecto dispone además de un rol de Desarrollo / Integración local, cubierto actualmente por el chat técnico histórico, especialmente adecuado para trabajo interactivo en Windows/WSL2 y PoC locales. El Tech Lead puede asignar a ese rol issues `PROGRAMADOR` sin ceder la responsabilidad de dirección técnica.
@@ -27,6 +27,8 @@ El proyecto dispone además de un rol de Desarrollo / Integración local, cubier
 - Proponer mejoras de código y optimización del funcionamiento del producto.
 - Convertir trabajo técnico en issues ejecutables, con contexto y criterios de aceptación suficientes.
 - Mantener el backlog técnico ordenado y trazable.
+- Revisar tanto las issues con `TECH LEAD` como las issues abiertas sin label de rol.
+- Reactivar issues bloqueadas o en espera cuando se resuelvan sus dependencias.
 - Revisar el alcance técnico de las issues antes de su ejecución.
 - Mantener actualizados `docs/tech-lead.md` y `docs/desarrollo.md` cuando cambien arquitectura, herramientas, proceso, restricciones o forma de trabajo.
 - Mantener coherencia entre documentación, código y estado real del repositorio.
@@ -52,13 +54,38 @@ La issue debe contener, en la medida aplicable:
 
 Los descubrimientos durante una implementación que excedan el alcance original se convierten en nuevas issues en lugar de ampliar silenciosamente el cambio.
 
-### Etiqueta `PROGRAMADOR`
+### Labels de turno
 
-Toda issue cuya ejecución corresponda a un programador debe llevar la etiqueta `PROGRAMADOR`.
+Las labels de rol indican qué rol tiene la **siguiente actuación pendiente**. No son una clasificación histórica de la issue.
 
-Mientras el Tech Lead sea también el ejecutor temporal, esta regla se mantiene sin excepciones para las issues de desarrollo. La etiqueta identifica el tipo de responsabilidad de ejecución, no a la persona o chat concreto que la realiza.
+#### `PROGRAMADOR`
 
-Las tareas exclusivas de gobierno, análisis o documentación del Tech Lead no necesitan esa etiqueta salvo que se deleguen a Desarrollo.
+La siguiente actuación corresponde a Desarrollo / Integración local o a quien ejerza temporalmente el rol de Programador.
+
+Si el Tech Lead ejecuta personalmente una issue `PROGRAMADOR`, actúa en ese momento como Programador y no cambia la semántica de la label.
+
+#### `TECH LEAD`
+
+Existe una actuación inmediata pendiente del Tech Lead: revisión, decisión, validación, respuesta a bloqueo, redefinición o cierre.
+
+Las issues `TECH LEAD` constituyen la bandeja de entrada activa del rol.
+
+#### Sin label de rol
+
+Una issue abierta sin `PROGRAMADOR` ni `TECH LEAD` sigue bajo responsabilidad de supervisión del Tech Lead. Puede estar en backlog, pendiente de prioridad o esperando una dependencia.
+
+No se considera huérfana. El Tech Lead debe revisar periódicamente estas issues junto con su bandeja `TECH LEAD` y activar el siguiente turno cuando corresponda.
+
+Si depende de otra issue, la relación debe quedar escrita explícitamente, por ejemplo `Bloqueada por #17`. Cuando cambie el estado de la dependencia, el Tech Lead debe revisar y reactivar la issue dependiente.
+
+#### Traspasos
+
+- Desarrollo → Tech Lead: Desarrollo registra resultado/bloqueo, retira `PROGRAMADOR` y asigna `TECH LEAD`.
+- Tech Lead → Desarrollo: el Tech Lead registra la decisión, retira `TECH LEAD` y asigna `PROGRAMADOR`.
+- Tech Lead → backlog/espera: retira la label de turno y mantiene la issue abierta bajo su supervisión.
+- Cierre: el Tech Lead retira labels de turno y cierra la issue una vez validada.
+
+Una issue cerrada no debe conservar `PROGRAMADOR` ni `TECH LEAD`, porque ambas significan trabajo pendiente.
 
 ### Comunicación con Desarrollo / Integración local
 
@@ -67,9 +94,10 @@ El protocolo completo está en `docs/comunicacion-agentes.md`.
 Reglas operativas:
 
 - el Tech Lead prepara la issue y sus criterios antes de delegar;
-- Desarrollo lee la issue directamente en GitHub;
+- Desarrollo detecta su trabajo mediante `PROGRAMADOR` y lee la issue directamente en GitHub;
 - resultados, métricas, bloqueos y hallazgos vuelven a la misma issue;
-- el Tech Lead responde allí con aceptación, correcciones, nuevas issues o escalado;
+- Desarrollo realiza el traspaso a `TECH LEAD` cuando necesita revisión o decisión;
+- el Tech Lead responde allí con aceptación, correcciones, nuevas issues o escalado y reasigna el turno si procede;
 - la memoria del Proyecto de ChatGPT sirve como apoyo contextual, no como mecanismo de coordinación;
 - el propietario no debería tener que copiar mensajes entre chats salvo durante una interacción local paso a paso.
 
@@ -77,12 +105,13 @@ Reglas operativas:
 
 1. Issue creada y suficientemente definida.
 2. Tech Lead valida alcance, dependencias y criterios de aceptación.
-3. Si corresponde a Desarrollo, la issue lleva `PROGRAMADOR`.
-4. Implementación trazable a la issue, por el programador, por Desarrollo / Integración local o temporalmente por el Tech Lead.
+3. Se asigna la label del rol que debe actuar a continuación o se deja sin label de rol si permanece en backlog/espera bajo supervisión del Tech Lead.
+4. Implementación o actuación trazable a la issue.
 5. Ejecución de validaciones automáticas y manuales aplicables.
-6. Revisión técnica del resultado.
-7. Actualización de documentación/ADR si el cambio modifica el sistema conocido.
-8. Cierre de la issue solo cuando sus criterios de aceptación estén satisfechos o se documente explícitamente por qué se cierra de otra forma.
+6. Traspaso mediante label cuando cambia el responsable de la siguiente actuación.
+7. Revisión técnica del resultado.
+8. Actualización de documentación/ADR si el cambio modifica el sistema conocido.
+9. Retirada de labels de turno y cierre de la issue cuando los criterios estén satisfechos o se documente explícitamente otro motivo de cierre.
 
 ## Límites de decisión
 
