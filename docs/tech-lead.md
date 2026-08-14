@@ -19,6 +19,8 @@ Esta acumulación de funciones no elimina la separación de responsabilidades:
 - toda issue de desarrollo mantiene la etiqueta `PROGRAMADOR`, aunque sea ejecutada por el propio Tech Lead;
 - cuando se incorpore un programador, cambiará el ejecutor, no el proceso ni la trazabilidad.
 
+El proyecto dispone además de un rol de Desarrollo / Integración local, cubierto actualmente por el chat técnico histórico, especialmente adecuado para trabajo interactivo en Windows/WSL2 y PoC locales. El Tech Lead puede asignar a ese rol issues `PROGRAMADOR` sin ceder la responsabilidad de dirección técnica.
+
 ## Responsabilidades
 
 - Mantener una visión actualizada del código, arquitectura, tests, CI, deuda técnica y riesgos.
@@ -31,6 +33,7 @@ Esta acumulación de funciones no elimina la separación de responsabilidades:
 - Exigir verificación suficiente antes de integrar o promover cambios.
 - Registrar decisiones técnicas duraderas mediante ADR cuando corresponda.
 - Coordinar con Product Owner / Arquitecto las decisiones que crucen producto y arquitectura.
+- Revisar las entregas y bloqueos de Desarrollo / Integración local registrados en GitHub.
 
 ## Gobernanza de trabajo
 
@@ -53,16 +56,29 @@ Los descubrimientos durante una implementación que excedan el alcance original 
 
 Toda issue cuya ejecución corresponda a un programador debe llevar la etiqueta `PROGRAMADOR`.
 
-Mientras el Tech Lead sea también el ejecutor temporal, esta regla se mantiene sin excepciones para las issues de desarrollo. La etiqueta identifica el tipo de responsabilidad de ejecución, no a la persona concreta que la realiza.
+Mientras el Tech Lead sea también el ejecutor temporal, esta regla se mantiene sin excepciones para las issues de desarrollo. La etiqueta identifica el tipo de responsabilidad de ejecución, no a la persona o chat concreto que la realiza.
 
 Las tareas exclusivas de gobierno, análisis o documentación del Tech Lead no necesitan esa etiqueta salvo que se deleguen a Desarrollo.
+
+### Comunicación con Desarrollo / Integración local
+
+El protocolo completo está en `docs/comunicacion-agentes.md`.
+
+Reglas operativas:
+
+- el Tech Lead prepara la issue y sus criterios antes de delegar;
+- Desarrollo lee la issue directamente en GitHub;
+- resultados, métricas, bloqueos y hallazgos vuelven a la misma issue;
+- el Tech Lead responde allí con aceptación, correcciones, nuevas issues o escalado;
+- la memoria del Proyecto de ChatGPT sirve como apoyo contextual, no como mecanismo de coordinación;
+- el propietario no debería tener que copiar mensajes entre chats salvo durante una interacción local paso a paso.
 
 ### Flujo mínimo
 
 1. Issue creada y suficientemente definida.
 2. Tech Lead valida alcance, dependencias y criterios de aceptación.
 3. Si corresponde a Desarrollo, la issue lleva `PROGRAMADOR`.
-4. Implementación trazable a la issue, por el programador o temporalmente por el Tech Lead.
+4. Implementación trazable a la issue, por el programador, por Desarrollo / Integración local o temporalmente por el Tech Lead.
 5. Ejecución de validaciones automáticas y manuales aplicables.
 6. Revisión técnica del resultado.
 7. Actualización de documentación/ADR si el cambio modifica el sistema conocido.
@@ -133,6 +149,7 @@ Por tanto, la futura integración de avatar dinámico requerirá una implementac
 - `docs/estado-reconstruccion.md`: estado real de la transición.
 - `docs/gobernanza-producto.md`: reparto de responsabilidades.
 - `docs/desarrollo.md`: onboarding y contrato operativo del programador.
+- `docs/comunicacion-agentes.md`: protocolo formal entre Tech Lead y Desarrollo / Integración local.
 - `docs/musetalk-poc.md`: ejecución y resultados de la PoC de avatar/lip-sync local.
 - `docs/decisiones/` y `docs/adr/`: decisiones técnicas y evaluaciones versionadas.
 

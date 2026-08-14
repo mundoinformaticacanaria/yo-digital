@@ -36,11 +36,28 @@ Ejecuta las issues preparadas para desarrollo. Toda issue que deba ejecutar un p
 
 Su contrato operativo está definido en `docs/desarrollo.md`.
 
+### Desarrollo / Integración local
+
+El chat técnico histórico del proyecto actúa actualmente como ejecutor especializado en el entorno local.
+
+Su ámbito incluye:
+
+- ejecución de issues `PROGRAMADOR`;
+- pruebas y diagnóstico en Windows / WSL2;
+- instalación y evaluación de PoC y modelos locales;
+- mediciones de GPU, VRAM, RAM, navegador y rendimiento;
+- implementación dentro del alcance asignado;
+- registro de resultados, bloqueos y hallazgos en la issue correspondiente.
+
+Conserva su conocimiento histórico del proyecto, pero las nuevas decisiones de arquitectura, alcance o dependencias relevantes siguen el flujo vigente de issues/ADR y revisión del Tech Lead.
+
 ### Acumulación temporal de funciones
 
 Hasta que se incorpore un desarrollador dedicado, el Tech Lead asume también temporalmente la ejecución de las issues de Desarrollo / Programador.
 
 La acumulación es únicamente de persona ejecutora, no de proceso ni de responsabilidades. El Tech Lead debe seguir diferenciando cuándo actúa como responsable técnico y cuándo actúa como ejecutor. Toda issue de desarrollo seguirá llevando la etiqueta `PROGRAMADOR`, aunque la implemente temporalmente el Tech Lead.
+
+Las issues pueden ejecutarse también desde el rol de Desarrollo / Integración local cuando requieran interacción con el entorno WSL2 o cuando sea el ejecutor más adecuado. La etiqueta `PROGRAMADOR` identifica el tipo de trabajo, no un chat o persona concreta.
 
 Cuando se incorpore un desarrollador, asumirá la ejecución de dichas issues sin necesidad de modificar el flujo de trabajo establecido.
 
@@ -59,6 +76,18 @@ Flujo general:
 5. revisar técnicamente;
 6. actualizar documentación/ADR cuando corresponda;
 7. cerrar la issue con el resultado trazable.
+
+## Comunicación entre agentes
+
+La coordinación entre Tech Lead y Desarrollo / Integración local se rige por `docs/comunicacion-agentes.md`.
+
+Principios:
+
+- GitHub es el canal formal de comunicación y la fuente de verdad.
+- La issue es el contrato de trabajo y el hilo principal para resultados, preguntas, bloqueos y hallazgos.
+- Los PR contienen los cambios revisables; CI y pruebas aportan la evidencia de validación.
+- La memoria de ChatGPT Projects puede aportar contexto de otras conversaciones del mismo proyecto, pero no sustituye GitHub ni constituye mensajería directa entre chats.
+- El propietario no debe copiar manualmente información entre chats salvo cuando una prueba local interactiva lo haga necesario.
 
 ## Coordinación Product Owner / Arquitecto ↔ Tech Lead
 
