@@ -5,12 +5,28 @@ import { BrowserSpeechSynthesizer } from "../src/infrastructure/browser-speech-s
 
 test("BrowserSpeechRecognizer reports support and configures Spanish recognition", () => {
   let instance;
+  let nextTimerId = 0;
+  const timers = new Map();
+
   class FakeRecognition {
     constructor() { instance = this; }
     start() { this.started = true; }
     stop() { this.stopped = true; }
   }
-  const recognizer = new BrowserSpeechRecognizer({ windowRef: { SpeechRecognition: FakeRecognition } });
+
+  const windowRef = {
+    SpeechRecognition: FakeRecognition,
+    setTimeout(callback) {
+      const id = ++nextTimerId;
+      timers.set(id, callback);
+      return id;
+    },
+    clearTimeout(id) {
+      timers.delete(id);
+    },
+  };
+
+  const recognizer = new BrowserSpeechRecognizer({ windowRef });
   let final = "";
   recognizer.listen({ onFinal: (value) => final = value });
 
@@ -30,6 +46,9 @@ test("BrowserSpeechRecognizer reports support and configures Spanish recognition
   entry.isFinal = true;
   instance.onresult({ resultIndex: 0, results: [entry] });
   assert.equal(final, "respuesta final");
+
+  recognizer.stop();
+  assert.equal(timers.size, 0);
 });
 
 test("BrowserSpeechSynthesizer speaks in Spanish and can cancel", () => {
