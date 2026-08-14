@@ -36,6 +36,14 @@ Ejecuta las issues preparadas para desarrollo. Toda issue que deba ejecutar un p
 
 Su contrato operativo está definido en `docs/desarrollo.md`.
 
+### Acumulación temporal de funciones
+
+Hasta que se incorpore un desarrollador dedicado, el Tech Lead asume también temporalmente la ejecución de las issues de Desarrollo / Programador.
+
+La acumulación es únicamente de persona ejecutora, no de proceso ni de responsabilidades. El Tech Lead debe seguir diferenciando cuándo actúa como responsable técnico y cuándo actúa como ejecutor. Toda issue de desarrollo seguirá llevando la etiqueta `PROGRAMADOR`, aunque la implemente temporalmente el Tech Lead.
+
+Cuando se incorpore un desarrollador, asumirá la ejecución de dichas issues sin necesidad de modificar el flujo de trabajo establecido.
+
 ## Regla de trazabilidad
 
 Todo trabajo sobre el repositorio debe estar previamente identificado mediante una issue.
