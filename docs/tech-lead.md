@@ -1,6 +1,6 @@
 # Rol Tech Lead — Yo-digital
 
-Última actualización: 2026-08-14
+Última actualización: 2026-08-17
 
 ## Misión
 
@@ -28,6 +28,7 @@ El proyecto dispone además de un rol de Desarrollo / Integración local, cubier
 - Convertir trabajo técnico en issues ejecutables, con contexto y criterios de aceptación suficientes.
 - Mantener el backlog técnico ordenado y trazable.
 - Revisar tanto las issues con `TECH LEAD` como las issues abiertas sin label de rol.
+- Vigilar el estado de las issues `PROPIETARIO` para reactivar el circuito cuando el propietario complete su actuación.
 - Reactivar issues bloqueadas o en espera cuando se resuelvan sus dependencias.
 - Revisar el alcance técnico de las issues antes de su ejecución.
 - Mantener actualizados `docs/tech-lead.md` y `docs/desarrollo.md` cuando cambien arquitectura, herramientas, proceso, restricciones o forma de trabajo.
@@ -58,6 +59,8 @@ Los descubrimientos durante una implementación que excedan el alcance original 
 
 Las labels de rol indican qué rol tiene la **siguiente actuación pendiente**. No son una clasificación histórica de la issue.
 
+En operación normal `PROGRAMADOR`, `TECH LEAD` y `PROPIETARIO` son mutuamente excluyentes. Una transición debe terminar con una sola label de turno o sin ninguna si la issue permanece en backlog/espera bajo supervisión del Tech Lead.
+
 #### `PROGRAMADOR`
 
 La siguiente actuación corresponde a Desarrollo / Integración local o a quien ejerza temporalmente el rol de Programador.
@@ -70,9 +73,20 @@ Existe una actuación inmediata pendiente del Tech Lead: revisión, decisión, v
 
 Las issues `TECH LEAD` constituyen la bandeja de entrada activa del rol.
 
+#### `PROPIETARIO`
+
+Existe una actuación inmediata pendiente del propietario. Se usa cuando el trabajo no puede continuar sin una intervención que corresponde exclusivamente al propietario, por ejemplo:
+
+- interacción física o local con su equipo;
+- validación humana;
+- decisión reservada sobre coste, privacidad, seguridad o servicios externos;
+- suministro privado de credenciales, audios, imágenes u otro material que no debe almacenarse en GitHub.
+
+La issue debe indicar qué condición está pendiente y qué rol continuará después, sin publicar secretos ni material privado.
+
 #### Sin label de rol
 
-Una issue abierta sin `PROGRAMADOR` ni `TECH LEAD` sigue bajo responsabilidad de supervisión del Tech Lead. Puede estar en backlog, pendiente de prioridad o esperando una dependencia.
+Una issue abierta sin `PROGRAMADOR`, `TECH LEAD` ni `PROPIETARIO` sigue bajo responsabilidad de supervisión del Tech Lead. Puede estar en backlog, pendiente de prioridad o esperando una dependencia.
 
 No se considera huérfana. El Tech Lead debe revisar periódicamente estas issues junto con su bandeja `TECH LEAD` y activar el siguiente turno cuando corresponda.
 
@@ -81,11 +95,15 @@ Si depende de otra issue, la relación debe quedar escrita explícitamente, por 
 #### Traspasos
 
 - Desarrollo → Tech Lead: Desarrollo registra resultado/bloqueo, retira `PROGRAMADOR` y asigna `TECH LEAD`.
+- Desarrollo → Propietario: Desarrollo registra la necesidad sin exponer material sensible, retira `PROGRAMADOR` y asigna `PROPIETARIO`.
 - Tech Lead → Desarrollo: el Tech Lead registra la decisión, retira `TECH LEAD` y asigna `PROGRAMADOR`.
+- Tech Lead → Propietario: el Tech Lead registra la actuación requerida, retira `TECH LEAD` y asigna `PROPIETARIO`.
+- Propietario → Desarrollo: una vez completada su actuación, se retira `PROPIETARIO` y se asigna `PROGRAMADOR` si Desarrollo debe continuar.
+- Propietario → Tech Lead: una vez completada su actuación, se retira `PROPIETARIO` y se asigna `TECH LEAD` si corresponde revisión, decisión o cierre.
 - Tech Lead → backlog/espera: retira la label de turno y mantiene la issue abierta bajo su supervisión.
-- Cierre: el Tech Lead retira labels de turno y cierra la issue una vez validada.
+- Cierre: el Tech Lead retira cualquier label de turno y cierra la issue una vez validada.
 
-Una issue cerrada no debe conservar `PROGRAMADOR` ni `TECH LEAD`, porque ambas significan trabajo pendiente.
+Una issue cerrada no debe conservar `PROGRAMADOR`, `TECH LEAD` ni `PROPIETARIO`, porque las tres significan trabajo pendiente.
 
 ### Comunicación con Desarrollo / Integración local
 
@@ -96,7 +114,8 @@ Reglas operativas:
 - el Tech Lead prepara la issue y sus criterios antes de delegar;
 - Desarrollo detecta su trabajo mediante `PROGRAMADOR` y lee la issue directamente en GitHub;
 - resultados, métricas, bloqueos y hallazgos vuelven a la misma issue;
-- Desarrollo realiza el traspaso a `TECH LEAD` cuando necesita revisión o decisión;
+- Desarrollo realiza el traspaso a `TECH LEAD` cuando necesita revisión o decisión técnica;
+- Desarrollo puede transferir a `PROPIETARIO` cuando requiere una actuación exclusiva del propietario;
 - el Tech Lead responde allí con aceptación, correcciones, nuevas issues o escalado y reasigna el turno si procede;
 - la memoria del Proyecto de ChatGPT sirve como apoyo contextual, no como mecanismo de coordinación;
 - el propietario no debería tener que copiar mensajes entre chats salvo durante una interacción local paso a paso.
@@ -126,6 +145,8 @@ Debe coordinar o escalar cuando el cambio implique:
 - cambios relevantes de privacidad o seguridad;
 - sustitución de una decisión arquitectónica acordada;
 - promoción a producción cuando requiera validación humana.
+
+Cuando esa coordinación requiera una actuación concreta del propietario, el Tech Lead transfiere la issue a `PROPIETARIO` y deja en comentarios el contexto suficiente sin incluir información sensible.
 
 ## Estado técnico actual
 
