@@ -1,12 +1,14 @@
 # Gobernanza del producto
 
-Última actualización: 2026-08-14
+Última actualización: 2026-08-17
 
 ## Roles
 
 ### Cliente / propietario
 
 Xerach Hernández es el propietario del producto y conserva la decisión final sobre costes, privacidad, seguridad, servicios externos, uso de datos y promoción del producto cuando requiera validación humana.
+
+Cuando una issue lleve la label `PROPIETARIO`, significa que la siguiente actuación pendiente corresponde al propietario. Puede tratarse de una validación humana, interacción local, decisión reservada a su ámbito o suministro privado de material/credenciales que no deben publicarse en GitHub.
 
 ### Product Owner / Arquitecto
 
@@ -73,15 +75,24 @@ Las labels de rol expresan **quién tiene la siguiente actuación pendiente**:
 
 - `PROGRAMADOR`: debe actuar Desarrollo / Integración local o quien ejerza el rol de Programador.
 - `TECH LEAD`: existe una actuación inmediata pendiente del Tech Lead.
+- `PROPIETARIO`: existe una actuación inmediata pendiente del propietario.
 - sin label de rol: la issue abierta continúa bajo supervisión del Tech Lead, pero no tiene un turno inmediato delegado; puede estar en backlog, pendiente de prioridad o esperando una dependencia.
+
+En operación normal `PROGRAMADOR`, `TECH LEAD` y `PROPIETARIO` son mutuamente excluyentes. Una issue abierta debe terminar cada transición con una sola label de turno o sin ninguna si permanece en backlog/espera.
 
 Las issues abiertas sin label de rol no están huérfanas. El Tech Lead es responsable de revisar periódicamente ese backlog y activar el siguiente turno cuando corresponda.
 
-Cuando Desarrollo termina una ejecución o necesita una decisión, registra el resultado en comentarios y cambia `PROGRAMADOR` por `TECH LEAD`. Cuando el Tech Lead devuelve trabajo a Desarrollo, cambia `TECH LEAD` por `PROGRAMADOR`.
+Cuando Desarrollo termina una ejecución o necesita una decisión técnica, registra el resultado y cambia `PROGRAMADOR` por `TECH LEAD`. Si necesita una actuación exclusiva del propietario, cambia `PROGRAMADOR` por `PROPIETARIO` después de dejar el contexto necesario.
+
+Cuando el Tech Lead devuelve trabajo a Desarrollo, cambia `TECH LEAD` por `PROGRAMADOR`. Si necesita actuación del propietario, cambia `TECH LEAD` por `PROPIETARIO`.
+
+Cuando el propietario completa su actuación, la issue pasa a `PROGRAMADOR` o `TECH LEAD` según quién deba continuar; también puede quedar sin label si vuelve a backlog/espera bajo supervisión del Tech Lead.
 
 Si una issue queda esperando otra, la dependencia debe constar explícitamente (`Bloqueada por #N`). Al cambiar el estado de la dependencia, el Tech Lead revisa las issues dependientes y asigna el siguiente turno.
 
-Las issues cerradas no deben conservar `PROGRAMADOR` ni `TECH LEAD`, porque ambas labels significan trabajo pendiente.
+Las issues cerradas no deben conservar `PROGRAMADOR`, `TECH LEAD` ni `PROPIETARIO`, porque las tres labels significan trabajo pendiente.
+
+GitHub nunca debe almacenar secretos, credenciales, audios privados, retratos, vídeos, embeddings ni otro material sensible que el propietario aporte durante su actuación. Solo se registra la necesidad, el estado y la conclusión operativa.
 
 Flujo general:
 
@@ -122,6 +133,8 @@ El Tech Lead debe detenerse y coordinar cuando una decisión implique:
 - sustitución de una decisión arquitectónica acordada;
 - credenciales, permisos o acciones que solo pueda realizar el propietario;
 - validación humana imprescindible antes de promover una versión a producción.
+
+Cuando la siguiente actuación corresponda al propietario, esta coordinación se hace visible mediante la label `PROPIETARIO`.
 
 ## Forma de trabajo
 
