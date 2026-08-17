@@ -1,6 +1,6 @@
 # Comunicación entre agentes — Yo-digital
 
-Última actualización: 2026-08-14
+Última actualización: 2026-08-17
 
 ## Objetivo
 
@@ -53,6 +53,8 @@ La coordinación se realiza en este orden:
 
 Las labels de rol son un mecanismo operativo. Indican **quién debe actuar a continuación**; no describen quién creó la issue ni quién trabajó históricamente en ella.
 
+En operación normal son mutuamente excluyentes: una issue abierta no debe mantener simultáneamente más de una label de turno (`PROGRAMADOR`, `TECH LEAD`, `PROPIETARIO`). Durante una transición técnica puede existir durante unos segundos la label anterior y la nueva, pero el estado final debe contener una sola.
+
 ### `PROGRAMADOR`
 
 La siguiente actuación corresponde a Desarrollo / Integración local o a quien esté ejerciendo el rol de Programador.
@@ -65,9 +67,24 @@ Existe una actuación inmediata pendiente del Tech Lead: revisión, decisión, r
 
 Mientras una issue tenga `TECH LEAD`, forma parte de la bandeja de entrada activa del Tech Lead.
 
+### `PROPIETARIO`
+
+La siguiente actuación corresponde al propietario del producto. Se utiliza cuando Desarrollo o el Tech Lead no pueden continuar sin una intervención que solo el propietario puede realizar o validar.
+
+Ejemplos:
+
+- interacción física/local con el equipo del propietario;
+- proporcionar de forma privada una credencial, audio, imagen u otro material que no debe publicarse en GitHub;
+- validación humana de un resultado;
+- decisión sobre costes, privacidad, seguridad o servicios externos reservada al propietario.
+
+GitHub debe registrar qué tipo de actuación está pendiente y el estado del bloqueo, pero **nunca** el secreto, credencial, material biométrico o contenido privado en sí.
+
+Mientras una issue tenga `PROPIETARIO`, ni Desarrollo ni el Tech Lead deben continuar el trabajo que dependa de esa actuación.
+
 ### Issue abierta sin label de rol
 
-No significa que la issue carezca de responsable. Permanece bajo **responsabilidad de supervisión del Tech Lead**, pero no tiene una actuación inmediata delegada a Desarrollo ni un traspaso activo pendiente.
+No significa que la issue carezca de responsable. Permanece bajo **responsabilidad de supervisión del Tech Lead**, pero no tiene una actuación inmediata asignada a Desarrollo, Tech Lead o propietario.
 
 Puede representar, por ejemplo:
 
@@ -76,20 +93,20 @@ Puede representar, por ejemplo:
 - una issue que espera una dependencia;
 - una actuación futura que el Tech Lead debe vigilar.
 
-El Tech Lead debe revisar periódicamente tanto las issues `TECH LEAD` como las issues abiertas sin label de rol. Por tanto, ninguna issue abierta queda huérfana.
+El Tech Lead debe revisar periódicamente tanto las issues `TECH LEAD` como las issues abiertas sin label de rol. También debe vigilar que las issues `PROPIETARIO` vuelvan al circuito cuando el propietario complete su actuación. Por tanto, ninguna issue abierta queda huérfana.
 
 ### Dependencias y bloqueos
 
 Cuando una issue no puede avanzar porque depende de otra, debe quedar escrito explícitamente en el cuerpo o en un comentario, por ejemplo: `Bloqueada por #17`.
 
-Una issue que espera una dependencia puede permanecer sin label de rol. El Tech Lead es responsable de revisar su situación al cerrar o avanzar la issue de la que depende y de asignar entonces el siguiente turno (`PROGRAMADOR` o `TECH LEAD`).
+Una issue que espera una dependencia puede permanecer sin label de rol. El Tech Lead es responsable de revisar su situación al cerrar o avanzar la issue de la que depende y de asignar entonces el siguiente turno (`PROGRAMADOR`, `TECH LEAD` o `PROPIETARIO`).
 
 ### Traspaso Desarrollo → Tech Lead
 
 Cuando Desarrollo:
 
 - completa el trabajo;
-- alcanza un bloqueo que requiere decisión;
+- alcanza un bloqueo que requiere decisión técnica;
 - descubre una alternativa que excede su autoridad;
 - necesita revisión antes de continuar;
 
@@ -101,6 +118,15 @@ debe:
 
 No debe cerrar por sí mismo una issue simplemente porque haya terminado su ejecución técnica, salvo que el procedimiento de una issue concreta lo autorice expresamente.
 
+### Traspaso Desarrollo → Propietario
+
+Si Desarrollo necesita una actuación que solo puede realizar el propietario:
+
+1. deja un comentario describiendo la necesidad sin publicar información privada;
+2. retira `PROGRAMADOR`;
+3. asigna `PROPIETARIO`;
+4. detiene el trabajo que dependa de esa actuación.
+
 ### Traspaso Tech Lead → Desarrollo
 
 Si tras revisar la issue el Tech Lead determina que Desarrollo debe continuar:
@@ -111,9 +137,23 @@ Si tras revisar la issue el Tech Lead determina que Desarrollo debe continuar:
 
 Si la issue queda aparcada, pendiente de otra dependencia o pasa a backlog, el Tech Lead retira la label de turno y mantiene su responsabilidad de supervisión.
 
+### Traspaso Tech Lead → Propietario
+
+Cuando la siguiente actuación requiere una decisión o acción reservada al propietario, el Tech Lead registra el contexto suficiente, retira `TECH LEAD` y asigna `PROPIETARIO`.
+
+### Traspaso Propietario → siguiente rol
+
+Cuando el propietario completa su actuación, la issue debe pasar al rol que pueda continuar:
+
+- `PROPIETARIO` → `PROGRAMADOR` si Desarrollo debe seguir ejecutando;
+- `PROPIETARIO` → `TECH LEAD` si corresponde revisión, decisión técnica o cierre;
+- `PROPIETARIO` → sin label de turno si la issue vuelve a backlog/espera bajo supervisión del Tech Lead.
+
+El propietario no necesita publicar en GitHub material privado usado durante su actuación; basta con dejar constancia de que la condición necesaria se ha completado cuando corresponda.
+
 ### Cierre
 
-Cuando el Tech Lead valida que la issue puede cerrarse, se retiran las labels de turno (`PROGRAMADOR` / `TECH LEAD`) y se cierra la issue.
+Cuando el Tech Lead valida que la issue puede cerrarse, se retiran las labels de turno (`PROGRAMADOR`, `TECH LEAD`, `PROPIETARIO`) y se cierra la issue.
 
 Una issue cerrada no debe conservar una label que indique trabajo pendiente de un rol.
 
@@ -153,11 +193,11 @@ Al finalizar una ejecución o alcanzar un bloqueo relevante, Desarrollo debe dej
 ## Trabajo fuera de alcance detectado
 - ...
 
-## Decisiones requeridas al Tech Lead
-- ...
+## Decisiones requeridas
+- Tech Lead / Propietario: ...
 ```
 
-Después debe realizar el traspaso de label definido anteriormente cuando la siguiente actuación corresponda al Tech Lead.
+Después debe realizar el traspaso de label definido anteriormente según quién tenga la siguiente actuación.
 
 No se deben publicar secretos, audios privados, imágenes biométricas, embeddings ni otros materiales sensibles en los comentarios.
 
@@ -170,6 +210,7 @@ El Tech Lead revisa la issue y responde mediante una de estas acciones:
 - aclara una decisión de implementación;
 - crea una nueva issue para trabajo descubierto fuera de alcance;
 - escala al Product Owner / Arquitecto o propietario cuando la decisión excede el ámbito técnico del Tech Lead;
+- transfiere el turno a `PROPIETARIO` cuando la siguiente actuación corresponde al propietario;
 - solicita ADR si el hallazgo implica una decisión arquitectónica duradera.
 
 Una propuesta de Desarrollo no se convierte en decisión por el mero hecho de estar implementada localmente.
@@ -208,16 +249,19 @@ Por tanto:
 
 El propietario no debe actuar como mensajero técnico entre chats salvo cuando una prueba local requiera su participación interactiva.
 
-En un flujo normal basta con indicar al chat de Desarrollo qué issue debe ejecutar. Ese chat debe leer GitHub, trabajar, y registrar allí el resultado. Posteriormente el Tech Lead puede leer directamente la misma issue.
+Las issues `PROPIETARIO` constituyen su cola de actuaciones pendientes. Al completar una de ellas, el turno debe transferirse al rol que corresponda para que el trabajo pueda continuar.
 
 ## Ejemplo: PoC MuseTalk
 
 1. Tech Lead define la issue `#7`, sus métricas y asigna `PROGRAMADOR`.
 2. Desarrollo detecta `#7` en su cola y trabaja con el propietario en WSL2.
-3. Desarrollo registra en `#7` instalación, errores, métricas, resultado y bloqueos.
-4. Al terminar o necesitar decisión, cambia `PROGRAMADOR` por `TECH LEAD`.
-5. Tech Lead detecta `#7` en su bandeja, revisa el resultado y decide la siguiente actuación.
-6. Si hay que continuar, devuelve la issue a `PROGRAMADOR`; si está completada, retira labels de turno y la cierra; si debe esperar otra dependencia, la deja sin label de rol y mantiene su supervisión.
+3. Desarrollo llega a un punto que requiere interacción del propietario y deja el contexto necesario en la issue.
+4. Cambia `PROGRAMADOR` por `PROPIETARIO` sin publicar material privado.
+5. El propietario completa la actuación requerida.
+6. La issue vuelve a `PROGRAMADOR` si Desarrollo debe continuar o a `TECH LEAD` si procede revisión/decisión.
+7. Desarrollo registra instalación, errores, métricas, resultado y bloqueos.
+8. Al terminar, cambia `PROGRAMADOR` por `TECH LEAD`.
+9. Tech Lead revisa y, si está completada, retira las labels de turno y cierra la issue.
 
 ## Conflictos de información
 
