@@ -1,6 +1,6 @@
 # Desarrollo / Programador — Yo-digital
 
-Última actualización: 2026-08-14
+Última actualización: 2026-08-17
 
 Este documento es el punto de entrada operativo para una persona o agente que vaya a programar en Yo-digital. Debe permitir comenzar a trabajar con el contexto esencial sin depender de conversaciones externas.
 
@@ -31,13 +31,13 @@ Cuando una tarea se ejecute de forma interactiva con el propietario en WSL2, el 
 
 ## Labels y traspaso de turno
 
-Las labels de rol indican quién debe actuar a continuación.
+Las labels de rol indican quién debe actuar a continuación. En operación normal `PROGRAMADOR`, `TECH LEAD` y `PROPIETARIO` son mutuamente excluyentes.
 
 ### Mientras exista `PROGRAMADOR`
 
 La issue está en la cola activa de Desarrollo. Desarrollo puede avanzar dentro del alcance y criterios definidos.
 
-### Cuando Desarrollo termina o necesita decisión
+### Cuando Desarrollo termina o necesita decisión técnica
 
 Si el trabajo está completado, queda bloqueado, necesita revisión o requiere una decisión del Tech Lead:
 
@@ -48,19 +48,34 @@ Si el trabajo está completado, queda bloqueado, necesita revisión o requiere u
 
 Desarrollo no debe cerrar una issue simplemente porque haya terminado su parte técnica, salvo que la issue autorice expresamente otro procedimiento. El cierre ordinario corresponde al Tech Lead tras revisión.
 
+### Cuando Desarrollo necesita al propietario
+
+Si no puedes continuar sin una actuación exclusiva del propietario —por ejemplo interacción local, validación humana o entrega privada de credenciales/material—:
+
+1. deja un comentario explicando qué condición está pendiente, sin publicar secretos ni material privado;
+2. retira `PROGRAMADOR`;
+3. asigna `PROPIETARIO`;
+4. detén el trabajo que dependa de esa actuación.
+
+No publiques en GitHub la credencial, audio, imagen, vídeo, embedding u otro contenido privado usado durante esa interacción.
+
 ### Si el Tech Lead devuelve la issue
 
 Cuando el Tech Lead retire `TECH LEAD` y vuelva a asignar `PROGRAMADOR`, Desarrollo debe leer primero los nuevos comentarios/decisiones antes de continuar.
 
+### Si el propietario devuelve la issue
+
+Cuando `PROPIETARIO` cambie a `PROGRAMADOR`, Desarrollo debe comprobar qué condición se ha completado y continuar únicamente desde ese punto. Si el propietario devuelve la issue a `TECH LEAD`, no la ejecutes hasta que vuelva a recibir `PROGRAMADOR`.
+
 ### Issues sin label de rol
 
-Una issue abierta sin `PROGRAMADOR` ni `TECH LEAD` no forma parte de la cola activa de Desarrollo. Permanece bajo supervisión del Tech Lead y puede estar en backlog, pendiente de prioridad o esperando una dependencia.
+Una issue abierta sin `PROGRAMADOR`, `TECH LEAD` ni `PROPIETARIO` no forma parte de la cola activa de Desarrollo. Permanece bajo supervisión del Tech Lead y puede estar en backlog, pendiente de prioridad o esperando una dependencia.
 
 No debe tomarse por iniciativa propia salvo que el Tech Lead asigne `PROGRAMADOR`.
 
 ### Dependencias
 
-Si detectas que no puedes continuar porque dependes de otra issue o condición, deja la dependencia explícita en comentarios (`Bloqueada por #N`) y traspasa a `TECH LEAD` si requiere actuación o decisión del Tech Lead.
+Si detectas que no puedes continuar porque dependes de otra issue o condición, deja la dependencia explícita en comentarios (`Bloqueada por #N`). Si el bloqueo requiere una decisión técnica, traspasa a `TECH LEAD`; si requiere una actuación exclusiva del propietario, traspasa a `PROPIETARIO`.
 
 ## Antes de tocar código
 
@@ -91,9 +106,9 @@ Al completar una ejecución o alcanzar un bloqueo relevante, deja un comentario 
 - métricas obtenidas;
 - hallazgos;
 - trabajo fuera de alcance detectado;
-- decisiones que necesita tomar el Tech Lead.
+- siguiente actuación necesaria y rol que debe realizarla (`TECH LEAD` o `PROPIETARIO`).
 
-Después realiza el traspaso `PROGRAMADOR` → `TECH LEAD` cuando la siguiente actuación corresponda al Tech Lead.
+Después realiza el traspaso desde `PROGRAMADOR` a la label del rol que tenga la siguiente actuación.
 
 No publiques secretos, audios privados, retratos, embeddings ni material biométrico en GitHub.
 
@@ -162,6 +177,7 @@ Reglas durante la PoC:
 - No se añade MuseTalk como dependencia de runtime de Yo-digital hasta demostrar su viabilidad.
 - Retratos, vídeos, WAV, frames, embeddings, cachés de avatar y resultados permanecen fuera de GitHub.
 - Las métricas y conclusiones sí se documentan en GitHub.
+- Si la PoC necesita interacción o material privado del propietario, usa el traspaso `PROGRAMADOR` → `PROPIETARIO` y reanuda solo cuando la issue vuelva a `PROGRAMADOR`.
 
 ### Audio necesario para lip-sync
 
@@ -239,9 +255,9 @@ Antes de entregar:
 5. actualiza documentación si el cambio modifica el sistema conocido;
 6. registra en la issue riesgos, limitaciones y trabajo descubierto fuera de alcance;
 7. deja el comentario de entrega;
-8. cambia `PROGRAMADOR` por `TECH LEAD`.
+8. cambia `PROGRAMADOR` por `TECH LEAD` si corresponde revisión técnica, o por `PROPIETARIO` si la siguiente actuación depende del propietario.
 
-Una tarea de Desarrollo no está terminada únicamente porque compile o pase tests: debe satisfacer la issue, dejar evidencia suficiente y devolver formalmente el turno al Tech Lead.
+Una tarea de Desarrollo no está terminada únicamente porque compile o pase tests: debe satisfacer la issue, dejar evidencia suficiente y devolver formalmente el turno al rol correcto.
 
 ## Producción y despliegue
 
