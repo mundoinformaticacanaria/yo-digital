@@ -4,6 +4,9 @@ import process from "node:process";
 
 const ROOT = process.cwd();
 const SOURCE_ROOT = path.join(ROOT, "src");
+const AUTHORIZED_FETCH_ADAPTERS = new Set([
+  "src/infrastructure/http-audio-speech-synthesizer.js",
+]);
 const violations = [];
 
 async function walk(directory) {
@@ -22,6 +25,7 @@ const files = await walk(SOURCE_ROOT);
 for (const file of files) {
   const content = await readFile(file, "utf8");
   const relative = path.relative(ROOT, file);
+  const portableRelative = relative.split(path.sep).join("/");
 
   for (const match of content.matchAll(/from\s+["'](\.[^"']+)["']/g)) {
     const imported = path.resolve(path.dirname(file), match[1]);
@@ -32,8 +36,8 @@ for (const file of files) {
     }
   }
 
-  if (/\bfetch\s*\(/.test(content)) {
-    violations.push(`${relative}: fetch() no autorizado; el producto no debe añadir backend o tracking sin decisión explícita`);
+  if (/\bfetch\s*\(/.test(content) && !AUTHORIZED_FETCH_ADAPTERS.has(portableRelative)) {
+    violations.push(`${relative}: fetch() no autorizado fuera de un adaptador de red aprobado`);
   }
 
   if (/localStorage\.|sessionStorage\./.test(content)) {
@@ -46,4 +50,4 @@ if (violations.length) {
   process.exit(1);
 }
 
-console.log(`Estructura OK: ${files.length} módulos JS, imports relativos válidos y sin fetch/localStorage no autorizados.`);
+console.log(`Estructura OK: ${files.length} módulos JS, imports relativos válidos y red limitada a adaptadores autorizados.`);
