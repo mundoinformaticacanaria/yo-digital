@@ -208,3 +208,10 @@ Si uno de estos documentos contradice el código o el estado real, el Tech Lead 
 ## Criterio de calidad
 
 La meta no es maximizar abstracciones. Se aplican SOLID, Clean Code y separación de responsabilidades de forma pragmática. Un cambio técnico debe mejorar al menos una propiedad verificable —mantenibilidad, claridad, testabilidad, rendimiento, fiabilidad o seguridad— sin degradar innecesariamente las demás.
+
+
+### TTS remoto seguro
+
+Desde la issue #16 y ADR-005, la reconstrucción admite un adaptador HTTP genérico de TTS que devuelve audio reutilizable. La preview debe conservar `BrowserSpeechSynthesizer` como fallback mientras no exista endpoint configurado.
+
+La API key y el identificador privado de la voz nunca se incorporan al cliente ni al repositorio. La red queda limitada al adaptador autorizado por `scripts/check-structure.mjs`. El despliegue del endpoint seguro es infraestructura separada y requiere mantener el criterio de coste recurrente 0 € o una decisión explícita del propietario.
