@@ -40,10 +40,16 @@ La transición de estado se coordina desde la composición de la aplicación: el
 ## Voz
 
 - Entrada: `SpeechRecognition` / `webkitSpeechRecognition`, `es-ES`.
-- Salida: `speechSynthesis`, `es-ES`.
+- Salida local/fallback: `speechSynthesis`, `es-ES`.
+- Salida remota opcional: `HttpAudioSpeechSynthesizer` contra un endpoint HTTPS configurable y sin secretos en cliente.
+- Resiliencia: `ResilientSpeechSynthesizer` vuelve a la síntesis del navegador si el TTS remoto no está configurado o falla antes de iniciar audio.
+- El audio remoto se expone como `Blob`/Object URL para permitir reutilización futura por el renderer de lip-sync.
+- La normalización de pronunciación es exclusiva de TTS y no modifica el texto visible.
 - Dataset: `MediaRecorder` + IndexedDB.
 - Waveform: Web Audio API.
 - ZIP: JSZip cargado bajo demanda. Si falla, descarga individual.
+
+La credencial del proveedor y el identificador privado de la voz pertenecen al endpoint seguro, nunca al bundle de GitHub Pages. Véase `docs/adr/005-secure-cloned-voice-tts.md`.
 
 ## Publicación
 
