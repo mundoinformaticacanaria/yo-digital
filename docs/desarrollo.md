@@ -276,3 +276,17 @@ No sustituyas `index.html` ni promociones la reconstrucción a producción salvo
 - Experimento de avatar/lip-sync: `docs/musetalk-poc.md`.
 
 Ante una contradicción entre documentación y código, no elijas silenciosamente una versión: regístrala para que el Tech Lead determine la corrección y trazabilidad.
+
+
+### TTS remoto seguro
+
+La salida de voz remota se implementa detrás de `HttpAudioSpeechSynthesizer` y `ResilientSpeechSynthesizer`.
+
+Reglas de implementación:
+
+- no incluir API keys, identificadores privados de voz ni material biométrico en código o configuración pública;
+- no llamar directamente a un proveedor TTS autenticado desde el navegador;
+- cualquier acceso de red nuevo requiere issue y autorización explícita; `scripts/check-structure.mjs` limita actualmente `fetch()` al adaptador HTTP de TTS aprobado;
+- mantener `BrowserSpeechSynthesizer` como fallback;
+- preservar los callbacks de inicio, fin y error y el audio reutilizable para el futuro lip-sync;
+- la corrección `Xerach` → `Será` se aplica solo al texto enviado al TTS.
