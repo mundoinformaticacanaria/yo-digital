@@ -1,6 +1,6 @@
 # ADR-004 · Proveedor de clonación de voz
 
-Estado: **propuesto / pendiente de autorización del cliente**  
+Estado: **superado por la validación posterior; véase ADR-005**  
 Fecha: 2026-08-11
 
 ## Contexto
@@ -42,3 +42,10 @@ No se enviará audio a ningún proveedor hasta recibir autorización explícita 
 ## Impacto arquitectónico
 
 Una integración dinámica TTS no puede poner la API key en GitHub Pages. Requerirá un backend/proxy serverless o un mecanismo de tokens efímeros emitidos desde servidor. Esto cambia la arquitectura actual sin backend y deberá aprobarse antes de producción.
+
+
+## Actualización 2026-09-18
+
+El propietario autorizó posteriormente una PoC con Fish Audio y validó una voz privada con calidad percibida buena. La decisión de integración segura resultante se documenta en `ADR-005 · Integración segura de TTS con voz clonada`.
+
+Este ADR se conserva como histórico de la evaluación inicial y no implica que las opciones aquí enumeradas sigan siendo la selección vigente.

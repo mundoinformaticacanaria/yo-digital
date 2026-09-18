@@ -27,6 +27,8 @@
 - Evaluación inicial de proveedores documentada en `docs/adr/004-voice-cloning-provider-evaluation.md`.
 - Punto de extensión de avatar independiente de proveedor mediante `AvatarController`, con estados `idle`, `listening`, `thinking` y `speaking`.
 - Renderer DOM inicial del avatar conectado al flujo real de reconocimiento y síntesis de voz en la preview.
+- PoC externa de voz clonada privada validada el 2026-09-18 con calidad percibida buena por el propietario.
+- Adaptador HTTP de TTS desacoplado, fallback al navegador y exposición de audio reutilizable preparados bajo la issue #16; ningún secreto ni identificador privado de voz se incorpora al cliente.
 
 ## Incidencias de validación
 
@@ -58,9 +60,11 @@ Comportamiento requerido y aplicado:
 
 ## Voz clonada
 
-El propietario aportó 8 audios y confirmó que contienen exclusivamente su voz. En los dos audios largos, las pausas corresponden a intervenciones telefónicas de otra persona que no quedaron registradas.
+El propietario aportó audios que contienen exclusivamente su voz. Los originales y derivados biométricos permanecen fuera del repositorio público.
 
-Los originales no se modifican ni se suben al repositorio público. El procesamiento local produjo un dataset maestro normalizado y un subconjunto reducido para IVC. La siguiente acción externa requiere autorización expresa porque implica enviar material biométrico a un proveedor de voz y posiblemente contratar un plan de pago.
+El 2026-09-18 el propietario autorizó y ejecutó una PoC externa con Fish Audio. Se creó una voz privada reutilizable y el propietario validó subjetivamente una calidad de voz muy buena. La pronunciación del nombre `Xerach` requiere una normalización fonética a `Será` antes de TTS.
+
+Las credenciales, el identificador privado del modelo y los audios de prueba no se documentan en GitHub. La integración de cliente utiliza un endpoint genérico seguro conforme a ADR-005.
 
 ## Producción
 
@@ -80,10 +84,9 @@ Preview técnica de la reconstrucción:
 6. Endurecer CI y documentar operación de despliegue.
 7. Definir el mecanismo final de generación del artefacto desplegable.
 8. Evolucionar el renderer de avatar hacia presencia fotorrealista y validar una PoC de lip-sync dinámico sin acoplar la aplicación al motor elegido.
-9. Crear una primera voz clonada cuando el cliente autorice el proveedor y el envío del audio, si sigue siendo necesario frente a alternativas locales.
-10. Diseñar proxy/tokenización para cualquier TTS dinámico externo sin exponer claves en GitHub Pages.
-11. Sustituir el bundle heredado solo tras validación funcional suficiente.
+9. Desplegar y validar un endpoint seguro para TTS remoto sin exponer claves en GitHub Pages.
+10. Sustituir el bundle heredado solo tras validación funcional suficiente.
 
-## Decisiones pendientes del cliente
+## Decisiones pendientes del propietario
 
-- Autorizar o rechazar el uso de un proveedor externo para crear la primera voz clonada, aceptando el envío de muestras biométricas y el coste/retención aplicables, si se opta por una solución externa.
+- Elegir o autorizar la infraestructura concreta donde desplegar el endpoint seguro de TTS cuando se vaya a activar la voz clonada en la preview pública.
