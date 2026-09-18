@@ -5,11 +5,41 @@ import { VoiceSampleService } from "./application/voice-sample-service.js";
 import { BrowserAudioRecorder } from "./infrastructure/browser-audio-recorder.js";
 import { BrowserSpeechRecognizer } from "./infrastructure/browser-speech-recognizer.js";
 import { BrowserSpeechSynthesizer } from "./infrastructure/browser-speech-synthesizer.js";
+import { HttpAudioSpeechSynthesizer } from "./infrastructure/http-audio-speech-synthesizer.js";
+import { ResilientSpeechSynthesizer } from "./infrastructure/resilient-speech-synthesizer.js";
+import { normalizeTtsText } from "./infrastructure/tts-text-normalizer.js";
 import { VoiceDatasetExporter } from "./infrastructure/voice-dataset-exporter.js";
 import { IndexedDbVoiceSampleRepository } from "./infrastructure/voice-sample-repository.js";
 import { WaveformRenderer } from "./infrastructure/waveform-renderer.js";
 import { AppView } from "./ui/app-view.js";
 import { DomAvatarRenderer } from "./ui/dom-avatar-renderer.js";
+
+function resolveTtsEndpoint() {
+  const runtimeEndpoint = globalThis.YO_DIGITAL_CONFIG?.ttsEndpoint;
+  if (typeof runtimeEndpoint === "string" && runtimeEndpoint.trim()) {
+    return runtimeEndpoint.trim();
+  }
+
+  return document
+    .querySelector('meta[name="yo-digital-tts-endpoint"]')
+    ?.getAttribute("content")
+    ?.trim() ?? "";
+}
+
+function createSpeechSynthesizer() {
+  const fallback = new BrowserSpeechSynthesizer();
+  const endpoint = resolveTtsEndpoint();
+
+  if (!endpoint) return fallback;
+
+  return new ResilientSpeechSynthesizer({
+    primary: new HttpAudioSpeechSynthesizer({
+      endpoint,
+      normalizeText: normalizeTtsText,
+    }),
+    fallback,
+  });
+}
 
 const root = document.querySelector("#app");
 const view = new AppView({ root });
@@ -19,7 +49,7 @@ const avatar = new AvatarController({
 
 const consultationController = new ConsultationController({
   recognizer: new BrowserSpeechRecognizer({ maxDurationMs: 60_000 }),
-  synthesizer: new BrowserSpeechSynthesizer(),
+  synthesizer: createSpeechSynthesizer(),
 });
 
 const voiceService = new VoiceSampleService({
@@ -53,7 +83,14 @@ function setConsultationMicState(listening) {
 
 function speakWithAvatar(text) {
   const spoken = consultationController.speak(text, {
-    onStart: () => avatar.speaking({ source: "tts" }),
+    onAudioReady: (context) => avatar.thinking({
+      reason: "tts-audio-ready",
+      audio: context?.audio,
+    }),
+    onStart: (context) => avatar.speaking({
+      source: "tts",
+      audio: context?.audio,
+    }),
     onEnd: () => avatar.idle({ reason: "speech-ended" }),
     onError: () => avatar.idle({ reason: "speech-error" }),
   });
