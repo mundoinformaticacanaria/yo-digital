@@ -8,7 +8,7 @@ export const QUESTION_BANK = Object.freeze({
     {
       key: "negocio",
       variants: [
-        "Para dimensionar tu app a medida: ¿Qué tipo de negocio tienes y qué hace exactamente?",
+        "Cuéntame un poco sobre tu negocio. ¿A qué te dedicas? ¿Y qué haces exactamente en el día a día?",
         "Cuéntame de tu negocio, ¿a qué se dedica y cómo opera hoy en el día a día?",
         "Para empezar: ¿qué hace tu empresa y cuál es su modelo de negocio principal?",
       ],
